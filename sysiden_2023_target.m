@@ -41,9 +41,9 @@ O.ParamLabels=["Target","Paresis"];
 O.AdressString=["SysIden_2023_ver1/DC","SysIden_2023_ver1/Saturation"];
 O.BlockParam=["Value","UpperLimit"];
 
-low=[0.2 0.2];
+low=[0.5 0.2];
 base=[0.5 1];
-high=[0.8 0.8];
+high=[1 0.8];
     
 for iParam=1:length(O.ParamLabels)
     ParamLabel=O.ParamLabels(iParam);
