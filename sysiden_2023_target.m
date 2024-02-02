@@ -18,11 +18,11 @@ PareticAngle=zeros(1,NumPoints);
 StdTe=zeros(1,NumPoints);
 StdEE=zeros(1,NumPoints);
 EffortCorr=zeros(1,NumPoints);
-mdlWks = get_param('SysIden_2023_ver1','ModelWorkspace');
+mdlWks = get_param('SysIden_2023_ver1_run','ModelWorkspace');
 assignin(mdlWks,'rngseed',1000);
 
 
-NumFilter=3;
+FilterNum=2;
 NumVar=4;
 tstep=0.0001;
 fs=1/(tstep*100);
@@ -30,15 +30,15 @@ NyqFreq=fs/2;
 ChirpFreq=5;
 Amp=0.5;
 SimTime=10;
-x_sampled=zeros(NumFilter,SimTime/tstep/100+1);
-y_sampled=zeros(NumFilter,SimTime/tstep/100+1);
+x_sampled=zeros(FilterNum,SimTime/tstep/100+1);
+y_sampled=zeros(FilterNum,SimTime/tstep/100+1);
 RepeatNum=10;
 % O=struct;
 rngseed=1000:1000+RepeatNum;
 a=0.1;
 
 O.ParamLabels=["Target","Paresis"];
-O.AdressString=["SysIden_2023_ver1/DC","SysIden_2023_ver1/Saturation"];
+O.AdressString=["SysIden_2023_ver1_run/DC","SysIden_2023_ver1/Saturation"];
 O.BlockParam=["Value","UpperLimit"];
 
 low=[0.5 0.2];
@@ -77,10 +77,15 @@ end
 % % end
 % % 
 % % ValueStringMat=[ParHandValueString;StimHandValueString;KValuesString;mWaveVarString;StimFreqVarString;TargetVarString];
-
-
-
 Param1Label=O.ParamLabels(1);
+Param2Label=O.ParamLabels(2);
+
+RepeatNum=1;
+Val1Num=length(O.(Param1Label).ParamValues);
+Val2Num=length(O.(Param2Label).ParamValues);
+NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
+Count=1;
+
 Param1Address= O.(Param1Label).AdressString;
 for iVal1=1:length(O.(Param1Label).ParamValues)
     Val1=O.(Param1Label).ParamValues(iVal1);
@@ -88,7 +93,6 @@ for iVal1=1:length(O.(Param1Label).ParamValues)
     
     set_param(Param1Address,Block1Param,num2str(Val1)) 
 
-    Param2Label=O.ParamLabels(2);
     Param2Address= O.(Param2Label).AdressString;
     for iVal2=1:length(O.(Param2Label).ParamValues)
         Val2=O.(Param2Label).ParamValues(iVal2);
@@ -96,27 +100,29 @@ for iVal1=1:length(O.(Param1Label).ParamValues)
         
         set_param(Param2Address,Block2Param,num2str(Val2)) 
 
-        for iFilter=1:NumFilter
+        for iFilter=1:FilterNum
 
-            FiltLabel=sprintf('Filt%d',iFilter);
-            str1=sprintf('%d',iFilter);
-            set_param('SysIden_2023_ver1/Effort Estimator/FilterNum','Value',str1)
+            FiltLabel=sprintf('Filt_%d',iFilter);
+            str1=sprintf('%d',iFilter+1);
+            set_param('SysIden_2023_ver1_run/Effort Estimator/FilterNum','Value',str1)
 
-            for iRepeat=1:10
+            for iRepeat=1:RepeatNum
 
                 RepeatLabel=sprintf('Rep_%d',iRepeat);
                 assignin(mdlWks,'rngseed',rngseed(iRepeat));
                 O.Sims.(FiltLabel).(RepeatLabel).RNGSeed=rngseed(iRepeat);
 
-                sim('SysIden_2023_ver1',SimTime);
+                sim('SysIden_2023_ver1_run',SimTime);
 
                 O.Sims.(FiltLabel).(RepeatLabel).x_sampled(iVal1,iVal2,:)=ans.Outcome(:,1);
                 O.Sims.(FiltLabel).(RepeatLabel).y_sampled(iVal1,iVal2,:)=ans.Outcome(:,5);
-
+                Count=Count+1;
+                sprintf('%.2f%% Complete',Count/NumofRun*100)
             end
         end
     end
 end
+
 filename=sprintf('SysIden_ver1');
 save(filename);
 %%
