@@ -18,7 +18,7 @@ PareticAngle=zeros(1,NumPoints);
 StdTe=zeros(1,NumPoints);
 StdEE=zeros(1,NumPoints);
 EffortCorr=zeros(1,NumPoints);
-mdlWks = get_param('SysIden_2023_ver1_run','ModelWorkspace');
+mdlWks = get_param('SysIden_orig_2023','ModelWorkspace');
 assignin(mdlWks,'rngseed',1000);
 
 
@@ -38,7 +38,7 @@ rngseed=1000:1000+RepeatNum;
 a=0.1;
 
 O.ParamLabels=["Target","Paresis"];
-O.AdressString=["SysIden_2023_ver1_run/DC","SysIden_2023_ver1/Saturation"];
+O.AdressString=["SysIden_orig_2023/DC","SysIden_orig_2023/Saturation"];
 O.BlockParam=["Value","UpperLimit"];
 
 low=[0.5 0.2];
@@ -82,10 +82,10 @@ Param2Label=O.ParamLabels(2);
 
 RepeatNum=1;
 Val1Num=length(O.(Param1Label).ParamValues);
-Val2Num=length(O.(Param2Label).ParamValues);
+Val2Num=1;
 NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
 Count=1;
-
+%%
 Param1Address= O.(Param1Label).AdressString;
 for iVal1=1:length(O.(Param1Label).ParamValues)
     Val1=O.(Param1Label).ParamValues(iVal1);
@@ -94,7 +94,7 @@ for iVal1=1:length(O.(Param1Label).ParamValues)
     set_param(Param1Address,Block1Param,num2str(Val1)) 
 
     Param2Address= O.(Param2Label).AdressString;
-    for iVal2=1:length(O.(Param2Label).ParamValues)
+    for iVal2=1:Val2Num
         Val2=O.(Param2Label).ParamValues(iVal2);
         Block2Param=O.(Param2Label).BlockParam;
         
@@ -104,7 +104,7 @@ for iVal1=1:length(O.(Param1Label).ParamValues)
 
             FiltLabel=sprintf('Filt_%d',iFilter);
             str1=sprintf('%d',iFilter+1);
-            set_param('SysIden_2023_ver1_run/Effort Estimator/FilterNum','Value',str1)
+            set_param('SysIden_orig_2023/Effort Estimator/FilterNum','Value',str1)
 
             for iRepeat=1:RepeatNum
 
@@ -112,7 +112,7 @@ for iVal1=1:length(O.(Param1Label).ParamValues)
                 assignin(mdlWks,'rngseed',rngseed(iRepeat));
                 O.Sims.(FiltLabel).(RepeatLabel).RNGSeed=rngseed(iRepeat);
 
-                sim('SysIden_2023_ver1_run',SimTime);
+                sim('SysIden_orig_2023',SimTime);
 
                 O.Sims.(FiltLabel).(RepeatLabel).x_sampled(iVal1,iVal2,:)=ans.Outcome(:,1);
                 O.Sims.(FiltLabel).(RepeatLabel).y_sampled(iVal1,iVal2,:)=ans.Outcome(:,5);
