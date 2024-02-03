@@ -30,7 +30,7 @@ NyqFreq=fs/2;
 ChirpFreq=5;
 Amp=0.5;
 SimTime=10;
-x_sampled=zeros(FilterNum,SimTime/tstep/100+1);
+x_sampled=zeros(FilterNum,SimTime/tstep/100+1);\
 y_sampled=zeros(FilterNum,SimTime/tstep/100+1);
 RepeatNum=10;
 % O=struct;
@@ -44,11 +44,11 @@ O.BlockParam=["Value","UpperLimit"];
 low=[0.5 0.2];
 base=[0.5 1];
 high=[1 0.8];
-    
+    NumPoints=[100 10];
 for iParam=1:length(O.ParamLabels)
     ParamLabel=O.ParamLabels(iParam);
     
-    O.(ParamLabel).ParamValues=logspace(log10(low(iParam)),log10(high(iParam)),NumPoints);
+    O.(ParamLabel).ParamValues=logspace(log10(low(iParam)),log10(high(iParam)),NumPoints(iParam));
     O.(ParamLabel).AdressString=O.AdressString(iParam);
     O.(ParamLabel).BaseValue=base(iParam);
 %     O.(ParamLabel).BaseString=num2str(base(iParam));
@@ -82,12 +82,12 @@ Param2Label=O.ParamLabels(2);
 
 RepeatNum=1;
 Val1Num=length(O.(Param1Label).ParamValues);
-Val2Num=1;
+Val2Num=length(O.(Param2Label).ParamValues);
 NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
 Count=1;
-%%
+
 Param1Address= O.(Param1Label).AdressString;
-for iVal1=1:length(O.(Param1Label).ParamValues)
+for iVal1=1:Val1Num
     Val1=O.(Param1Label).ParamValues(iVal1);
     Block1Param=O.(Param1Label).BlockParam;
     
