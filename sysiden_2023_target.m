@@ -18,6 +18,7 @@ PareticAngle=zeros(1,NumPoints);
 StdTe=zeros(1,NumPoints);
 StdEE=zeros(1,NumPoints);
 EffortCorr=zeros(1,NumPoints);
+SysIden_orig_2023
 mdlWks = get_param('SysIden_orig_2023','ModelWorkspace');
 assignin(mdlWks,'rngseed',1000);
 
@@ -29,7 +30,7 @@ NyqFreq=fs/2;
 ChirpFreq=10;
 % Amp=0.5;
 SimTime=10;
-x_sampled=zeros(FilterNum,SimTime/tstep/100+1);\
+x_sampled=zeros(FilterNum,SimTime/tstep/100+1);
 y_sampled=zeros(FilterNum,SimTime/tstep/100+1);
 RepNum=1;
 % O=struct;
@@ -81,10 +82,9 @@ Param2Label=O.ParamLabels(2);
 
 RepNum=1;
 Val1Num=length(O.(Param1Label).ParamValues);
-Val2Num=1;
+Val2Num=length(O.(Param2Label).ParamValues);
 NumofRun=RepNum*FilterNum*Val1Num*Val2Num;
 Val2Num=length(O.(Param2Label).ParamValues);
-NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
 Count=1;
 
 Param1Address= O.(Param1Label).AdressString;
@@ -124,7 +124,7 @@ for iVal1=1:Val1Num
     end
 end
 
-filename=sprintf('SysIden_ver1');
+filename=sprintf('SysIden_ver2');
 save(filename);
 
 %% Freq response
