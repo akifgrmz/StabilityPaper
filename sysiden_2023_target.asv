@@ -26,8 +26,8 @@ FilterNum=2;
 tstep=0.0001;
 fs=1/(tstep*100);
 NyqFreq=fs/2;
-ChirpFreq=10;
-% Amp=0.5;
+ChirpFreq=20;
+Amp=0.5;
 SimTime=10;
 x_sampled=zeros(FilterNum,SimTime/tstep/100+1);
 y_sampled=zeros(FilterNum,SimTime/tstep/100+1);
@@ -319,7 +319,7 @@ end
 %% Estimate TF
 global Estnp Estnz FreqResp FreqVec Ts StabThres minfThres IterLim
 
-FreqRange=1.5; % Hz
+FreqRange=2; % Hz
 FreqIndice=2:NumUniquePts*FreqRange/NyqFreq;
 ConfIntLabel={ 'FitAvg','FitLb','FitUb'};
 lgd={'Avg Fitted', 'Avg ','Lb Fitted','Lb', 'Ub Fitted', 'Ub '};
@@ -328,6 +328,9 @@ FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
 Ts=1/fs;
 
 %run for the nominal values 
+
+    
+
 
 for iFilt=1:FilterNum
     
