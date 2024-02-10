@@ -445,7 +445,7 @@ for iFilt=1:3
             IterLim=20;
 
             lb= [0     .5];
-            ub= [0.1    .6];c
+            ub= [0.1    .6];
             x0=0.01*ones(1,(Estnp+Estnz+1));
             [FittedFreqResp SysTf]= sysiden_basic(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
             SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);

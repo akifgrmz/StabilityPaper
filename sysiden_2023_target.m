@@ -129,13 +129,13 @@ save(filename);
 
 %% Freq response
 ParNum=1;
-load('SysIden_ver1');
+load('SysIden_ver3');
 ConfIntLabel={ 'Mean','Lb','Ub'};
 FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
 NominalInd=50;  %assumption
 
-
-
+Val2Num=10;
+Val1Num=100;
 % Reordering
       
 for iFilt=1:FilterNum
@@ -321,7 +321,7 @@ end
 %% Estimate TF
 global Estnp Estnz FreqResp FreqVec Ts StabThres minfThres IterLim
 
-FreqRange=1.5; % Hz
+FreqRange=9; % Hz
 FreqIndice=2:NumUniquePts*FreqRange/NyqFreq;
 ConfIntLabel={ 'FitAvg','FitLb','FitUb'};
 lgd={'Avg Fitted', 'Avg ','Lb Fitted','Lb', 'Ub Fitted', 'Ub '};
@@ -377,136 +377,584 @@ for iFilt=1:FilterNum
             end
 
 
-            for iConf=1:3  % fitting for Conf intervals.
-
-    %             RepeatLabel=sprintf('Rep_%d',iRep);
-                  ConfLabel=sprintf('ConfIntFit_%d',iConf);
-
-    %             Mag=O.(ParLabel).(FiltLabel).(ValLabel).MagOneSided(i,FreqIndice);
-    %             Phase=O.(ParLabel).(FiltLabel).(ValLabel).PhaseOneSided(i,FreqIndice);
-    %             FreqResp=O.(ParLabel).(FiltLabel).(ValLabel).AvgFreqRespOneSided(i,FreqIndice);
-
-                Phase=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(iConf,FreqIndice);
-                Mag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgMagOneSided(iConf,FreqIndice);
-                FreqResp=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided(iConf,FreqIndice);
-
-                Estnp=1;
-                Estnz=0;
-
-                minfThres=2;
-                StabThres=1;
-                IterLim=20;
-
-
-                lb= [0     .5];
-                ub= [0.1    .6];
-                x0=0.01*ones(1,(Estnp+Estnz+1));
-    %             x0=Detx0(Estnp+Estnz+1,lb,ub);
-                [FittedFreqResp SysTf]= sysiden_basic(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
-                SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
-    %             SysTf=tfest(SysFreq,1,0,'Ts',Ts);
-
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).np = Estnp;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Mag = Mag;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Phase = Phase;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FreqResp = FreqResp;
-
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).nz = Estnz;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).lb = lb;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).ub = ub;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysFreq=SysFreq;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).FreqVec=FreqVec;
-
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf=SysTf;
-                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp=FittedFreqResp';
-            end
+%             for iConf=1:3  % fitting for Conf intervals.
+% 
+%     %             RepeatLabel=sprintf('Rep_%d',iRep);
+%                   ConfLabel=sprintf('ConfIntFit_%d',iConf);
+% 
+%     %             Mag=O.(ParLabel).(FiltLabel).(ValLabel).MagOneSided(i,FreqIndice);
+%     %             Phase=O.(ParLabel).(FiltLabel).(ValLabel).PhaseOneSided(i,FreqIndice);
+%     %             FreqResp=O.(ParLabel).(FiltLabel).(ValLabel).AvgFreqRespOneSided(i,FreqIndice);
+% 
+%                 Phase=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(iConf,FreqIndice);
+%                 Mag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgMagOneSided(iConf,FreqIndice);
+%                 FreqResp=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided(iConf,FreqIndice);
+% 
+%                 Estnp=1;
+%                 Estnz=0;
+% 
+%                 minfThres=2;
+%                 StabThres=1;
+%                 IterLim=20;
+% 
+% 
+%                 lb= [0     1];
+%                 ub= [0.1    1];
+%                 x0=0.01*ones(1,(Estnp+Estnz+1));
+%     %             x0=Detx0(Estnp+Estnz+1,lb,ub);
+%                 [FittedFreqResp SysTf]= sysiden_basic(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
+%                 SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
+%     %             SysTf=tfest(SysFreq,1,0,'Ts',Ts);
+% 
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).np = Estnp;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Mag = Mag;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Phase = Phase;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FreqResp = FreqResp;
+% 
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).nz = Estnz;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).lb = lb;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).ub = ub;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysFreq=SysFreq;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).FreqVec=FreqVec;
+% 
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf=SysTf;
+%                 O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp=FittedFreqResp';
+%             end
         end
     end
 end
 
-S.(ParLabel)=O.(ParLabel);
+S=O;
 
 
 
-save('sysiden2023_target_ana')
+save('sysiden2023_target_ana2')
 
 %% plotting
 
-for iPar=1:1
-    
-    ParLabel=VarLabels{iPar};
-    ParLabel=strcat(ParLabel,sprintf('_%d',fs/DownSampleRate));
 
-for iFilt=1:3
+RepeatLabel=sprintf('Rep_%d',iRep);
+
+for iFilt=1:1
     
     FiltLabel=sprintf('Filt_%d',iFilt);
-    
-    for iVal=50:50
+    for iVal1=11:11
         
-        ValLabel=sprintf('Val_%d',iVal);
+        Val1Label=sprintf('Val_%d',iVal1);
+        for iVal2=1:1
         
-        for iConf=1:3
+            Val2Label=sprintf('Val_%d',iVal2);
             
-            ConfLabel=sprintf('ConfIntFit_%d',iConf);
+            figure
+            MagL=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MagAllRepsOneSided;
+            FittedFreqResp=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).FittedFreqResp;
+            FreqVec=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).FreqVec;
 
-            FittedMag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp;
-            Mag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Mag;
-            
-            SysTf=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf;
+            PhaseL=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).PhaseAllRepsOneSided;
 
-            figure(iVal)
-            subplot(3,1,iFilt)
-            semilogx(FreqVec,20*log10(abs(FittedMag)),"LineWidth",2,"Color",ColorLabel{iConf});
-            hold on
-            semilogx(FreqVec,20*log10(abs(Mag)),'--',"Color",ColorLabel{iConf});
+            plotrange=1:NumUniquePts;
+            figure(iFilt)
+            subplot(2,1,1)
+            semilogx(f_onesided,20*log10((MagL(2:end))))
+            hold 
+            semilogx(FreqVec,20*log10(FittedFreqResp))
 
-            legend(lgd)
-            title(FiltTitle(iFilt))
+%             hold 
+%             semilogx(f_onesided,zeros(1,length(f_onesided)),'k')
             xlabel(' Freq. (Hz) ')
-            ylabel('Mag.')
-            ylim([-40 40 ])
-                      
-            figure(100+iVal)
-            [re,im,wout,sdre,sdim] = nyquist(SysTf);
-            
-            re=squeeze(re);
-            im=squeeze(im);
-            
-            subplot(3,1,iFilt)
-            plot(re,im)
-            hold on 
+            ylabel('Mag. (dB)')
+%             ylim([-60 40 ])
+%             xlim([0 NyqFreq])
+            title(FiltTitle{iFilt})
+            legend(ConfIntLabel)
+            subplot(2,1,2)
+            semilogx(f_onesided,PhaseL(2:end))
+            hold 
+            semilogx(FreqVec,angle(FittedFreqResp))
 
-        end
-            
-%             figure
-%             MagL=O.(ParLabel).(FiltLabel).(ValLabel).MagAllRepsOneSided(1,:);
-%             PhaseL=O.(ParLabel).(FiltLabel).(ValLabel).PhaseAllRepsOneSided(1,:);
-%             plotrange=1:NumUniquePts;
-%             figure(iFilt)
-%             subplot(2,1,1)
-%             semilogx(f_onesided,20*log10((MagL)))
-% %             hold 
-% %             semilogx(f_onesided,zeros(1,length(f_onesided)),'k')
-%             xlabel(' Freq. (Hz) ')
-%             ylabel('Mag. (dB)')
-% %             ylim([-60 40 ])
-% %             xlim([0 NyqFreq])
-%             title(FiltTitle{iFilt})cl
-%             legend(ConfIntLabel)
-%             subplot(2,1,2)
-%             semilogx(f_onesided,PhaseL)
-%             xlabel(' Freq. (Hz) ')
-%             ylabel('Phase (rad)')
+            xlabel(' Freq. (Hz) ')
+            ylabel('Phase (rad)')
 %             xlim([0 NyqFreq])
 %             
 %             figure
 %             nyquist(SysTf)
 %             rlocus(SysTf)
 %             bode(SysTf)
+
+%         for iConf=1:3
+%             
+%             ConfLabel=sprintf('ConfIntFit_%d',iConf);
+% 
+%             FittedMag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp;
+%             Mag=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).Mag;
+%             
+%             SysTf=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf;
+% 
+%             figure(iVal)
+%             subplot(3,1,iFilt)
+%             semilogx(FreqVec,20*log10(abs(FittedMag)),"LineWidth",2,"Color",ColorLabel{iConf});
+%             hold on
+%             semilogx(FreqVec,20*log10(abs(Mag)),'--',"Color",ColorLabel{iConf});
+% 
+%             legend(lgd)
+%             title(FiltTitle(iFilt))
+%             xlabel(' Freq. (Hz) ')
+%             ylabel('Mag.')
+%             ylim([-40 40 ])
+%                       
+%             figure(100+iVal)
+%             [re,im,wout,sdre,sdim] = nyquist(SysTf);
+%             
+%             re=squeeze(re);
+%             im=squeeze(im);
+%             
+%             subplot(3,1,iFilt)
+%             plot(re,im)
+%             hold on 
+% 
+%         end
+        end
     end
 end
+
+%% Nyquist Analysis
+
+global Wdiff FreqVec np nz 
+
+i=1;
+c_range=1:1:88;
+WMargin=[1 1 2.2];
+WCoef= [10 50 2];
+nps=[3 3 3];
+nzs=[1 1 1];
+TitleLabels={'Mean Freq Response', 'Lower Bound Response', 'Upper Bound Resoponse'};
+NyquistLabel={'Nyquist with Comb Filter', 'Nyquist with GS Filter', 'Nyquist with Blanking Method'};
+FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
+ylimValues=[ 0.5 0.2 0.2 ];
+LineLabel={'--','-','--o'};
+Val1Num=100;
+
+for iFilt=1:FilterNum
+
+    FiltLabel=sprintf('Filt_%d',iFilt);
+    TitleLabel=sprintf('%s',FiltTitle{iFilt});
+
+    for iVal1=1:Val1Num
+        Val1Label=sprintf('Val_%d',iVal1);
+
+        for iVal2=1:Val2Num
+            Val2Label=sprintf('Val_%d',iVal2);
+            
+            for iRep=1:RepNum
+                RepeatLabel=sprintf('Rep_%d',iRep);
+
+
+%                 L0= O.(ParLabel).(FiltLabel).(ValLabel).(ConfIntLabel{i}).FittedFreqResp;
+%                 L=O.(ParLabel).(FiltLabel).(ValLabel).MagAllRepsOneSided(1,FreqIndice);
+%                 L0Tf=O.(ParLabel).(FiltLabel).(ValLabel).(ConfIntLabel{i}).SysTf;
+
+                L=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MagAllRepsOneSided(FreqIndice);
+                L0Tf=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).SysTf;
+                L0=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).FittedFreqResp;
+                Wdiff=abs(abs(L)-abs(L0))';
+
+        %     Find W using this block
+
+            %     x0=randn(1,nps(iFilt)+nzs(iFilt));
+                x0=10*ones(1,nps(iFilt)+nzs(iFilt));
+                np=nps(iFilt);
+                nz=nzs(iFilt);
+                [Wtest, Wtf]=fminsysiden(Wdiff,x0,FreqVec,nps(iFilt),nzs(iFilt),Ts);
+                   
+                [re,im,wout,~,~]=nyquist(L0Tf,FreqVec*2*pi);
+                re=squeeze(re);
+                im=squeeze(im);
+                nyq=re+im*1i;
+
+                ConfIntDist=abs(nyq+1);
+                [MinConfIntMar,I(iVal1)]=min(ConfIntDist);
+                W=Wtest;
+                r = abs(W);
+                WDist=abs(nyq'+1-r);
+                [WMar,I]=min(WDist);  
+                I
+                
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).Wdiff=Wdiff;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).Wfit=Wtest;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).Wtf=Wtf;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).r=r;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).WDist=WDist;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).WMar=WMar;
+                
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).ConfIntDist=ConfIntDist;
+                O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MinConfIntMar=MinConfIntMar;
+            end
+           
+%             for iConf=1:3
+%                 
+%                 ConfLabel=sprintf('ConfIntFit_%d',iConf);
+% 
+% %                 L0= O.(ParLabel).(FiltLabel).(ValLabel).(ConfIntLabel{i}).FittedFreqResp;
+% %                 L=O.(ParLabel).(FiltLabel).(ValLabel).MagAllRepsOneSided(1,FreqIndice);
+% %                 L0Tf=O.(ParLabel).(FiltLabel).(ValLabel).(ConfIntLabel{i}).SysTf;
+% 
+%                  L=O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).Mag;
+%                 L0Tf=O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).SysTf;
+%                 L0=O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).FittedFreqResp;
+%                 Wdiff=abs(abs(L)-abs(L0'));
+% 
+%         %     Find W using this block
+% 
+%             %     x0=randn(1,nps(iFilt)+nzs(iFilt));
+%                 x0=10*ones(1,nps(iFilt)+nzs(iFilt));
+%                 np=nps(iFilt);
+%                 nz=nzs(iFilt);
+%                 [Wtest, Wtf]=fminsysiden(Wdiff,x0,FreqVec,nps(iFilt),nzs(iFilt),Ts);
+%                    
+%                 [re,im,wout,~,~]=nyquist(L0Tf,FreqVec*2*pi);
+%                 re=squeeze(re);
+%                 im=squeeze(im);
+%                 nyq=re+im*1i;
+% 
+%                 ConfIntDist=abs(nyq+1);
+%                 [MinConfIntMar,I(iVal)]=min(ConfIntDist);
+%                 W=Wtest;
+%                 r = abs(W);
+%                 WDist=abs(nyq'+1-r);
+%                 [WMar,I]=min(WDist);  
+%                 I
+%                 
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).Wdiff=Wdiff;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).Wfit=Wtest;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).Wtf=Wtf;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).r=r;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).WDist=WDist;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).WMar=WMar;
+%                 
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).ConfIntDist=ConfIntDist;
+%                 O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).MinConfIntMar=MinConfIntMar;
+
+%                 xlabel('Freq. (Hz')
+%                 ylabel('Mag')
+%                 legend({'L','L0'});
+%                 subplot(6,iFilt,2)
+%                 semilogx(FreqVec,abs(Wtest))
+%                 hold on
+%                 semilogx(FreqVec, abs(Wdiff))
+% 
+%                 legend({'Wfit','L-L0'});
+%                 title(FiltTitle(iFilt))
+%                 xlabel('Freq. (Hz')
+%                 ylabel('Mag')
+
+
+% %           
+    %         pause
+    % 
+    %         calculate the margins using this block
+    %         Wmin=(L-L0);
+    %         MagWmin=abs(Wmin);
+    %         PhaseWmin=angle(Wmin);
+    %         Wmult=1:2/length(FreqVec):3-2/length(FreqVec);
+    %         SysW = frd(WCoef(iFilt)*Wmult.*WMargin(iFilt).*MagWmin.*exp(1j*PhaseWmin/10),FreqVec,'FrequencyUnit','Hz','Ts',Ts);
+
+    %     np=5;
+    %     nz=5;
+    %     iodelay = 0.1/Ts;
+    % %    opt = tfestOptions('EnforceStability', true,'SearchMethod','gna');    
+    %     Wtf = tfest(SysW,np,nz,iodelay,'Ts',Ts);
+    %     
+    %     WFreq=freqresp(Wtf,2*pi*FreqVec);
+    %     WFreq=squeeze(WFreq);
+    %     W=WFreq;
+
+    %     figure(iFilt)
+    %     semilogx(FreqVec,Wmult.*MagWmin)
+    %     hold on
+    %     semilogx(FreqVec, abs(WFreq))
+    %     semilogx(FreqVec, MagWmin)
+    %     hold off
+
+    
+
+        
+        
+
+%         figure(1)
+%         subplot(2,1,1)
+%         semilogx(FreqVec,(abs(L)),'LineWidth',1,'Color','k');
+%         hold on
+%         xlabel('Freq Hz')
+%         ylabel('Mag (dB)')
+%         title('Frequency Response with Different Filters')
+%         semilogx(FreqVec,(abs(L0)),LineLabel{iFilt},'LineWidth',2,'Color','k');
+%         lgd={'L (GS)', 'L_0 (GS)','L (Comb)', 'L_0 (Comb)','L (Blanking)', 'L_0 (Blanking)'};
+%         legend(lgd);
+% 
+%         subplot(2,1,2)
+%         semilogx(FreqVec,(abs(W)),LineLabel{iFilt},'Color','k','LineWidth',2);
+%         hold on
+%         semilogx(FreqVec,(abs(Wdiff)),LineLabel{iFilt},'Color','k','LineWidth',2);
+% 
+%         ylabel('|W = L-L_0|  (dB)')
+%     %     ylim([-40 20])
+%         xlim([0 9])
+%         xlabel('Frequency (Hz)')
+%         lgd={'|W| (GS)','|W| (Comb)','|W| (Blanking)'};
+%         legend(lgd);
+%         title('|W| for each Frequency Response ')    
+% 
+%         figure(2)
+%         subplot(3,1,iFilt)
+%         [re,im,wout,~,~]=nyquist(L0Tf,FreqVec*2*pi);
+%         re=squeeze(re);
+%         im=squeeze(im);
+%         plot(re,-im,'--','Color','k','Linewidth',2)
+%         hold on
+%         viscircles(cc,rr,'LineStyle','-','Color','k','Linewidth',.1)
+%         plot(100,100,'LineStyle','-','Color','k','Linewidth',.1)
+%     %     plot(cc(:,1),cc(:,2),'*')
+%         viscircles([re(I) -im(I)],r(I),'LineStyle','-','Color','k','Linewidth',2)
+%         plot(100,100,'LineStyle','-','Color','k','Linewidth',2)
+%         plot(-1,0,'+','LineWidth',2,'Color', 'k')
+%         title(NyquistLabel{iFilt})
+%         xlim([-1.01 2]) 
+%         ylim([-ylimValues(iFilt) ylimValues(iFilt) ]);
+%         xlabel('Real Axis')
+%         ylabel('Im Axis')
+%         grid
+%         subplot(3,1,1)
+%         legend('Nyquist Plot','Uncertainty Circles','Critical Circle','Critical Point','Location','West')
+
+% %         [re,im,wout,~,~]=nyquist(L0Tf,FreqVec*2*pi);
+% %         re=squeeze(re);
+% %         im=squeeze(im);
+
+    %     subplot(3,1,iFilt)
+
+    %    plot(re,im)
+    %    hold
+    %    plot([re(I) -1], [im(I) 0],'r')
+
+    
+%             end
+        end
+    end
 end
 
+% S.(ParLabel)=O.(ParLabel);
+% 
+% save('work2022Nyq_ipar5')
+
+%% plotting
+iVal=80;
+iFilt=1;
+iPar=5;
+ParLabel=VarLabels{iPar};
+ParLabel=strcat(ParLabel,sprintf('_%d',fs/DownSampleRate));
+ValLabel=sprintf('Val_%d',iVal);
+FiltLabel=sprintf('Filt_%d',iFilt);
+
+for iConf=1:1
+    
+    ConfLabel=sprintf('ConfIntFit_%d',iConf);
+
+    figure(iVal)
+    subplot(2,3,iFilt)
+    
+    L=S.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).Mag;
+    L0=S.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).FittedFreqResp;
+
+    semilogx(FreqVec,abs(L))
+    hold on
+    semilogx(FreqVec, abs(L0))
+    title(FiltTitle(iFilt))
+
+    subplot(2,3,iFilt+3)
+    semilogx(FreqVec,abs(Wtest))
+    hold on
+    semilogx(FreqVec, abs(Wdiff))
+
+    legend({'Wfit','L-L0'});
+    title(FiltTitle(iFilt))
+    xlabel('Freq. (Hz')
+    ylabel('Mag')
+
+
+end
+
+%% PLotting target_vs_paresis
+FilterNum=1;
+RepeatLabel=sprintf('Rep_%d',iRep);
+
+for iFilt=1:FilterNum
+    FiltLabel=sprintf('Filt_%d',iFilt);
+
+    for iVal1=1:Val1Num
+        Val1Label=sprintf('Val_%d',iVal1);
+
+        for iVal2=1:Val2Num
+            Val2Label=sprintf('Val_%d',iVal2);
+            
+
+            RepMar(iVal2,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MinConfIntMar;
+            WMar(iVal2,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).WMar;
+
+%             for iConf=1:3
+%                 
+%                 ConfLabel=sprintf('ConfIntFit_%d',iConf);
+% %                 ConfMar(iConf,iVal)=S.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).MinConfIntMar;
+% %                 WMar(iConf,iVal)=S.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).WMar;
+% %                 SysNum(iConf,iVal)=O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).SysTf.Numerator;
+% %                 SysDen(iConf,iVal)=O.(ParLabel).(FiltLabel).(ValLabel).(ConfLabel).SysTf.Denominator;
+% 
+%             end
+        end
+    end
+    
+%     figure(1000) 
+%     subplot(2,1,1)
+%     semilogx(1:iVal1Num,RepMar)
+%     hold
+% 
+% %     ParLabelTitle=VarLabels{iPar};
+% %     xlabel(ParLabelTitle)
+%     ylabel(FiltLabel)
+%     
+%     subplot(2,1,1)
+%     semilogx(1:iVal1Num,RepMar)
+%     
+
+qy=flip(O.('Paresis').ParamValues);
+qx=flip(O.('Target').ParamValues);
+
+
+    figure
+    mesh(qx,qy,RepMar)
+    xlabel('Target')
+    ylabel('Paresis Level')
+    zlabel('Stability Margin')
+    
+        figure
+    mesh(qx,qy,WMar)
+    xlabel('Target')
+    ylabel('Paresis Level')
+    zlabel('Stability Margin')
+
+end
+                
+
+
+function [Wtest Wtf]=fminsysiden(Wdiff,x0,FreqVec,np,nz,Ts)
+% system indentification for with minimized upper bound for the freq
+% respons Wdiff
+% Wdiff=W;
+% nz=2;
+% np=3;
+A=[];
+b=[];
+Aeq=[];
+beq=[];
+
+lb=-100*ones(np+nz,1);
+ub=100*ones(np+nz,1);
+
+[x minf outt s] = fmincon(@objective_f,x0,A,b,Aeq,beq,lb,ub,@const_f);
+
+x 
+minf
+
+Wtf=ConstructTF(x,nz);
+
+Wtest=freqresp(Wtf,FreqVec,'Hz');
+Wtest=squeeze(Wtest)';
+ 
+% figure(100)
+% semilogx(FreqVec,abs(Wtest))
+% hold
+% semilogx(FreqVec,abs(Wdiff))
+
+% 
+% NumUniquePts = ceil(NumFFT/2);
+% f_onesided=f_vec(1:NumUniquePts);
+% L0_FreqResp=freqresp(L0,f_onesided,'Hz');
+% L0_FreqResp=squeeze(L0_FreqResp);
+% 
+% L_onesided=L(1:NumUniquePts);
+% % Ldiff=L0-L;
+% 
+% figure
+% subplot(2,1,1)
+% plot(t,y_vec)
+% hold on
+% plot(t,x_vec)
+% plot(t,y);
+% hold off
+% subplot(2,1,2)
+% semilogx(f_onesided,20*log10(abs(L0_FreqResp)))
+% hold 
+% semilogx(f_onesided,20*log10(abs(L_onesided)));
+ 
+end
+function [TFun,num,den]=ConstructTF(x,z)
+global Ts
+num=1;
+den=1;
+
+p=length(x)-z-1;
+for iz=1:z
+    
+    num(iz+1)=x(iz+1);
+ 
+end
+
+for ip=1:p    
+    
+    den(ip+1)=x(1+z+ip);
+
+end
+
+num=num*x(1);
+TFun=tf(num,den,Ts);
+
+end
+
+function obj=objective_f(x)
+global FreqVec Wdiff nz Ts
+
+% n=length(Wdiff);
+Stf=ConstructTF(x,nz);
+
+S=freqresp(Stf,FreqVec,'Hz');
+S=squeeze(S);
+
+obj=sum((abs(Wdiff)-abs(S')).^2);
+
+end
+
+function [c,ceq] = const_f(x)
+
+    global Wdiff FreqVec nz 
+
+    % Construct TF
+
+    xtf=ConstructTF(x,nz);
+
+    FreqTf=freqresp(xtf,FreqVec,'Hz');
+    FreqTf=squeeze(FreqTf)';
+
+    MinVal=max(abs(Wdiff)-abs(FreqTf));  % mignt change to max over sum
+
+    for i=1:length(x)
+        
+        c(i)=MinVal;
+
+    end
+
+    % Nonlinear equality constraints
+    ceq = [];
+
+end
 
 function [Wtest Wtf]=sysiden_basic(FreqResp,x0,lb,ub,FreqVector,np,nz,Ts)
 % system indentification using fmincon\
@@ -559,7 +1007,7 @@ Stf=SpecialTF(x,Estnz);
 S=freqresp(Stf,FreqVec,'Hz');
 S=squeeze(S);
 
-obj1=sum((abs(FreqResp)-abs(S')).^2);
+obj1=sum((abs(FreqResp)-abs(S)).^2);
 % obj2=sum(((angle(FreqResp)-angle(S'))).^2);
 obj=obj1;
 end
