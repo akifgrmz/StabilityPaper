@@ -18,12 +18,11 @@ PareticAngle=zeros(1,NumPoints);
 StdTe=zeros(1,NumPoints);
 StdEE=zeros(1,NumPoints);
 EffortCorr=zeros(1,NumPoints);
-SysIden_orig_2023
 mdlWks = get_param('SysIden_orig_2023','ModelWorkspace');
 assignin(mdlWks,'rngseed',1000);
 
 
-FilterNum=2;
+FilterNum=1;
 tstep=0.0001;
 fs=1/(tstep*100);
 NyqFreq=fs/2;
@@ -38,13 +37,13 @@ rngseed=1000:1000+RepNum;
 a=0.1;
 
 O.ParamLabels=["Target","Paresis"];
-O.AdressString=["SysIden_orig_2023/DC","SysIden_orig_2023/Saturation"];
+O.AdressString=["SysIden_orig_2023/DC","SysIden_orig_2023/Constant"];
 O.BlockParam=["Value","UpperLimit"];
 
 low=[0.5 0.2];
 base=[0.5 1];
 high=[1 0.8];
-    NumPoints=[100 10];
+    NumPoints=[10 10];
 for iParam=1:length(O.ParamLabels)
     ParamLabel=O.ParamLabels(iParam);
     
@@ -82,9 +81,10 @@ Param2Label=O.ParamLabels(2);
 
 RepNum=1;
 Val1Num=length(O.(Param1Label).ParamValues);
-Val2Num=length(O.(Param2Label).ParamValues);
+Val2Num=1;
 NumofRun=RepNum*FilterNum*Val1Num*Val2Num;
 Val2Num=length(O.(Param2Label).ParamValues);
+NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
 Count=1;
 
 Param1Address= O.(Param1Label).AdressString;
@@ -104,7 +104,7 @@ for iVal1=1:Val1Num
         for iFilter=1:FilterNum
 
             FiltLabel=sprintf('Filt_%d',iFilter);
-            str1=sprintf('%d',iFilter+1);
+            str1=sprintf('%d',iFilter);
             set_param('SysIden_orig_2023/Effort Estimator/FilterNum','Value',str1)
 
             for iRepeat=1:RepNum
@@ -124,7 +124,7 @@ for iVal1=1:Val1Num
     end
 end
 
-filename=sprintf('SysIden_ver2');
+filename=sprintf('SysIden_ver4');
 save(filename);
 
 %% Freq response
