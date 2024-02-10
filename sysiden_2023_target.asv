@@ -1008,7 +1008,7 @@ Stf=SpecialTF(x,Estnz);
 S=freqresp(Stf,FreqVec,'Hz');
 S=squeeze(S);
 
-obj1=sum((abs(FreqResp)-abs(S')).^2);
+obj1=sum((abs(FreqResp)-abs(S)).^2);
 % obj2=sum(((angle(FreqResp)-angle(S'))).^2);
 obj=obj1;
 end
