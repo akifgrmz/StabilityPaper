@@ -18,6 +18,7 @@ PareticAngle=zeros(1,NumPoints);
 StdTe=zeros(1,NumPoints);
 StdEE=zeros(1,NumPoints);
 EffortCorr=zeros(1,NumPoints);
+SysIden_orig_2023
 mdlWks = get_param('SysIden_orig_2023','ModelWorkspace');
 assignin(mdlWks,'rngseed',1000);
 
@@ -38,12 +39,14 @@ a=0.1;
 
 O.ParamLabels=["Target","Paresis"];
 O.AdressString=["SysIden_orig_2023/DC","SysIden_orig_2023/Constant"];
-O.BlockParam=["Value","UpperLimit"];
+O.BlockParam=["Value","Value"];
 
 low=[0.5 0.2];
 base=[0.5 1];
 high=[1 0.8];
-    NumPoints=[10 10];
+
+NumPoints=[10 10];
+
 for iParam=1:length(O.ParamLabels)
     ParamLabel=O.ParamLabels(iParam);
     
@@ -79,12 +82,9 @@ end
 Param1Label=O.ParamLabels(1);
 Param2Label=O.ParamLabels(2);
 
-RepNum=1;
 Val1Num=length(O.(Param1Label).ParamValues);
-Val2Num=1;
-NumofRun=RepNum*FilterNum*Val1Num*Val2Num;
 Val2Num=length(O.(Param2Label).ParamValues);
-NumofRun=RepeatNum*FilterNum*Val1Num*Val2Num;
+NumofRun=RepNum*FilterNum*Val1Num*Val2Num;
 Count=1;
 
 Param1Address= O.(Param1Label).AdressString;
