@@ -532,17 +532,17 @@ NyquistLabel={'Nyquist with Comb Filter', 'Nyquist with GS Filter', 'Nyquist wit
 FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
 ylimValues=[ 0.5 0.2 0.2 ];
 LineLabel={'--','-','--o'};
-iVal1Num=100;
+Val1Num=100;
 
 for iFilt=1:FilterNum
 
     FiltLabel=sprintf('Filt_%d',iFilt);
     TitleLabel=sprintf('%s',FiltTitle{iFilt});
 
-    for iVal1=1:iVal1Num
+    for iVal1=1:Val1Num
         Val1Label=sprintf('Val_%d',iVal1);
 
-        for iVal2=1:1
+        for iVal2=1:Val2Num
             Val2Label=sprintf('Val_%d',iVal2);
             
             for iRep=1:RepNum
@@ -783,24 +783,22 @@ for iConf=1:1
 
 end
 
-%%
+%% PLotting target_vs_paresis
+FilterNum=1;
+RepeatLabel=sprintf('Rep_%d',iRep);
 
 for iFilt=1:FilterNum
     FiltLabel=sprintf('Filt_%d',iFilt);
 
-    for iVal1=1:iVal1Num
+    for iVal1=1:Val1Num
         Val1Label=sprintf('Val_%d',iVal1);
 
-        for iVal2=1:1
+        for iVal2=1:Val2Num
             Val2Label=sprintf('Val_%d',iVal2);
             
-            for iRep=1:RepNum
-                RepeatLabel=sprintf('Rep_%d',iRep);
 
-                RepMar(iRep,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MinConfIntMar;
-                WMar(iRep,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).WMar;
-                
-            end
+            RepMar(iVal2,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).MinConfIntMar;
+            WMar(iVal2,iVal1)=O.(FiltLabel).(RepeatLabel).(Val1Label).(Val2Label).WMar;
 
 %             for iConf=1:3
 %                 
@@ -814,15 +812,35 @@ for iFilt=1:FilterNum
         end
     end
     
-    figure(1000) 
-    subplot(3,1,iFilt)
-    semilogx(1:iVal1Num,RepMar)
-%     ParLabelTitle=VarLabels{iPar};
+%     figure(1000) 
+%     subplot(2,1,1)
+%     semilogx(1:iVal1Num,RepMar)
+%     hold
+% 
+% %     ParLabelTitle=VarLabels{iPar};
+% %     xlabel(ParLabelTitle)
+%     ylabel(FiltLabel)
+%     
+%     subplot(2,1,1)
+%     semilogx(1:iVal1Num,RepMar)
+%     
 
-%     xlabel(ParLabelTitle)
-    ylabel(FiltLabel)
-    hold on
-%         semilogx(ParValues,WMar)
+qy=flip(O.('Paresis').ParamValues);
+qx=flip(O.('Target').ParamValues);
+
+
+    figure
+    mesh(qx,qy,RepMar)
+    xlabel('Target')
+    ylabel('Paresis Level')
+    zlabel('Stability Margin')
+    
+        figure
+    mesh(qx,qy,WMar)
+    xlabel('Target')
+    ylabel('Paresis Level')
+    zlabel('Stability Margin')
+
 end
                 
 
