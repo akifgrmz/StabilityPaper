@@ -189,21 +189,15 @@ for iFilter=1:FilterNum
                 x_v=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).x_sampled;
                 y_v=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).y_sampled;
 
-                [FreqRespWelch, f_welch]=tfestimate(x_v,y_v,200,[100],[f_onesided],fs);
-        %             [FreqRespWelch, f_welch]=tfestimate(x_v,y_v,200,[100],[f_onesided],fs/DownSampleRate);
-
-                FT_L=fft(y_v,NumFFT)./fft(x_v,NumFFT);
-                FT_L(abs(FT_L) < tol) = 0;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FT=FT_L;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespOneSided=FT_L(1:NumUniquePts);
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagAllRepsOneSided=abs(FT_L(1:NumUniquePts));
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseAllRepsOneSided=angle(FT_L(1:NumUniquePts));
-
+                [FreqRespWelch, f_welch]=tfestimate(x_v,y_v,200,[50],[f_onesided],fs);
 
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespWelch=FreqRespWelch;
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespWelchOneSided=FreqRespWelch(1:NumUniquePts);
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagWelchAllRepsOneSided=abs(FreqRespWelch(1:NumUniquePts));
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseWelchAllRepsOneSided=angle(FreqRespWelch(1:NumUniquePts));
+                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagFreqRespWelchOneSided=abs(FreqRespWelch(1:NumUniquePts));
+                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseFreqRespWelchOneSided=angle(FreqRespWelch(1:NumUniquePts));
+
+                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).f_welch=f_welch;
+
 
             end
 
@@ -228,37 +222,37 @@ for iFilter=1:FilterNum
 
              end
 
-            for i=1:NumFFT
+%             for i=1:NumFFT
+% 
+%                 for iRep=1:RepNum
+% 
+%                     RepeatLabel=sprintf('Rep_%d',iRep);
+%                     x(iRep)= O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FT(i);
+% 
+%                 end
+% 
+%         %         x=O.(ParLabel).(FiltLabel).(ValLabel).FT(:,i);
+% 
+%                 x(abs(x) < tol) = 0; % removing insignificant valuese for better accu in phase
+% 
+%                 CI(:,i)=ConfInt(x,a);
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(1,i)=mean(x);
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(2:3,i)=CI(:,i);
+% 
+%                 CIMag(:,i)=ConfInt(abs(x),a);
+%                 CIAngle(:,i)=ConfInt(angle(x),a);
+% 
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(1,i)=mean(abs(x));
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(2:3,i)=(CIMag(:,i));
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(1,i)=mean(angle(x));
+%                 O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(2:3,i)=CIAngle(:,i);
+% 
+%             end
 
-                for iRep=1:RepNum
-
-                    RepeatLabel=sprintf('Rep_%d',iRep);
-                    x(iRep)= O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FT(i);
-
-                end
-
-        %         x=O.(ParLabel).(FiltLabel).(ValLabel).FT(:,i);
-
-                x(abs(x) < tol) = 0; % removing insignificant valuese for better accu in phase
-
-                CI(:,i)=ConfInt(x,a);
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(1,i)=mean(x);
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(2:3,i)=CI(:,i);
-
-                CIMag(:,i)=ConfInt(abs(x),a);
-                CIAngle(:,i)=ConfInt(angle(x),a);
-
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(1,i)=mean(abs(x));
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(2:3,i)=(CIMag(:,i));
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(1,i)=mean(angle(x));
-                O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(2:3,i)=CIAngle(:,i);
-
-            end
-
-            O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(:,1:NumUniquePts);
-            O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(:,1:NumUniquePts);
-            O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(:,1:NumUniquePts);
-
+%             O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgMag(:,1:NumUniquePts);
+%             O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgPhase(:,1:NumUniquePts);
+%             O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided= O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqResp(:,1:NumUniquePts);
+% 
             O.(FiltLabel).(Val1Label).(Val2Label).f_full=f_full;
             O.(FiltLabel).(Val1Label).(Val2Label).NumUniquePts=NumUniquePts;
             O.(FiltLabel).(Val1Label).(Val2Label).f_onesided=f_onesided;
@@ -283,14 +277,15 @@ for iFilt=1:1
 
             Val2Label=sprintf('Val_%d',iVal2);
 
-            MagL=O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided(:,2:end);
+%             MagL=O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided(:,2:end);
 %             AvgMag=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).AvgMag(1,:);
 
-            PhaseL=O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(:,2:end);
+%             PhaseL=O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(:,2:end);
 %             AvgPhase=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).AvgPhase(1,:);
 
             f_onesided=O.(FiltLabel).(Val1Label).(Val2Label).f_onesided(2:end);
-            MagWelchAllRepsOneSided=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagWelchAllRepsOneSided(2:end);
+%             MagWelchAllRepsOneSided=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagWelchAllRepsOneSided(2:end);
+            FreqRespWelch=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespWelch(2:end);
 
     %             PhaseAllRepsOneSided=O.(ParLabel).(FiltLabel).(ValLabel).PhaseAllRepsOneSided(1,:);
     %             MagAllRepsOneSided=O.(ParLabel).(FiltLabel).(ValLabel).MagAllRepsOneSided(1,:);
@@ -298,15 +293,16 @@ for iFilt=1:1
             plotrange=1:NumUniquePts;
             figure(iVal1)
             subplot(3,1,iFilt)
-            semilogx(f_onesided,20*log10((MagWelchAllRepsOneSided)),'DisplayName','Welch')
-            hold 
-            semilogx(f_onesided,20*log10((MagL)),'DisplayName','FFT')
+            semilogx(f_onesided,20*log10((FreqRespWelch)),'DisplayName','Welch')
+            hold on
+%             semilogx(f_onesided,20*log10((MagL)),'DisplayName','FFT Avg')
+%             semilogx(f_onesided,20*log10((FreqRespOneSided)),'DisplayName','FFT Rep')
 
             xlabel(' Freq. (Hz) ')
             ylabel('Mag. (dB)')
             title(FiltTitle{iFilt})
 
-            ylim([-50 10 ])
+            ylim([-50 30 ])
 %             xlim([0 10])
             legend
 %             legend(ConfIntLabel)
@@ -356,22 +352,22 @@ for iFilt=1:FilterNum
 
                 RepeatLabel=sprintf('Rep_%d',iRep);
 
-                Phase=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseAllRepsOneSided(FreqIndice);
-                Mag=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagAllRepsOneSided(FreqIndice);
-                FreqResp=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespOneSided(FreqIndice);
+%                 Phase=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseAllRepsOneSided(FreqIndice);
+%                 Mag=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagAllRepsOneSided(FreqIndice);
+%                 FreqResp=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespOneSided(FreqIndice);
                 
-                Estnp=3;
+                Estnp=5;
                 Estnz=2;
 
                 minfThres=1000;
                 StabThres=1;
                 IterLim=20;
-
-                lb= [0 -2  -1];
-                ub= [10 10 1 10 10 10 ];
+            
+                lb= [0 -2  -1 0 -10 4];
+                ub= [1  0   0 3  -8 5];
                 x0=0.01*ones(1,(Estnp+Estnz+1));
-                [FittedFreqResp SysTf]= sysiden_basic2(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
-                SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
+%                 [FittedFreqResp SysTf]= sysiden_basic2(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
+%                 SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
 % 
 %                 Estnp=1;
 %                 Estnz=0;
@@ -389,66 +385,67 @@ for iFilt=1:FilterNum
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).nz = Estnz;
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).lb = lb;
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).ub = ub;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysFreq=SysFreq;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqVec=FreqVec;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysFreq=SysFreq;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqVec=FreqVec;
 
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysTf=SysTf;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FittedFreqResp=FittedFreqResp';
-                
-                MagWelch=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagWelchAllRepsOneSided(FreqIndice);
-                
-                [WelchFittedFreqResp WelchSysTf]= sysiden_basic2(MagWelch,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
-                WelchSysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysTf=SysTf;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FittedFreqResp=FittedFreqResp';
+
+                MagWelch=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagFreqRespWelchOneSided(FreqIndice);
+                FreqRespWelchOneSided=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqRespWelchOneSided(FreqIndice);
+                FreqResp=FreqRespWelchOneSided;
+                [WelchFittedFreqResp WelchSysTf]= sysiden_basic2(MagWelch,x0,[],[],FreqVec,Estnp,Estnz,Ts);
+                WelchSysFreq = frd(FreqRespWelchOneSided,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
                 
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WelchSysFreq=WelchSysFreq;
                 O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WelchSysTf=WelchSysTf;
-                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WelchFittedFreqResp=WelchFittedFreqResp';
+                O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WelchFittedFreqResp=WelchFittedFreqResp;
 % 
             end
 
 
-            for iConf=1:1  % fitting for Conf intervals.
-
-    %             RepeatLabel=sprintf('Rep_%d',iRep);
-                  ConfLabel=sprintf('ConfIntFit_%d',iConf);
-
-    %             Mag=O.(ParLabel).(FiltLabel).(ValLabel).MagOneSided(i,FreqIndice);
-    %             Phase=O.(ParLabel).(FiltLabel).(ValLabel).PhaseOneSided(i,FreqIndice);
-    %             FreqResp=O.(ParLabel).(FiltLabel).(ValLabel).AvgFreqRespOneSided(i,FreqIndice);
-
-                Phase=O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(iConf,FreqIndice);
-                Mag=O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided(iConf,FreqIndice);
-                FreqResp=O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided(iConf,FreqIndice);
-
-                Estnp=3;
-                Estnz=2;
-
-                minfThres=1000;
-                StabThres=1;
-                IterLim=20;
-
-                lb= [0.1 0.1 0.1 -1 -3 1 ];
-                ub= [0.2  .2  .2  0 -2 2 ];
-                x0=0.01*ones(1,(Estnp+Estnz+1));
-    %             x0=Detx0(Estnp+Estnz+1,lb,ub);
-                [FittedFreqResp SysTf]= sysiden_basic(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
-                SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
-    %             SysTf=tfest(SysFreq,1,0,'Ts',Ts);
-
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).np = Estnp;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).Mag = Mag;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).Phase = Phase;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).FreqResp = FreqResp;
-
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).nz = Estnz;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).lb = lb;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).ub = ub;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).SysFreq=SysFreq;
-                O.(FiltLabel).(Val1Label).(Val2Label).FreqVec=FreqVec;
-
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf=SysTf;
-                O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp=FittedFreqResp';
-            end
+%             for iConf=1:1  % fitting for Conf intervals.
+% 
+%     %             RepeatLabel=sprintf('Rep_%d',iRep);
+%                   ConfLabel=sprintf('ConfIntFit_%d',iConf);
+% 
+%     %             Mag=O.(ParLabel).(FiltLabel).(ValLabel).MagOneSided(i,FreqIndice);
+%     %             Phase=O.(ParLabel).(FiltLabel).(ValLabel).PhaseOneSided(i,FreqIndice);
+%     %             FreqResp=O.(ParLabel).(FiltLabel).(ValLabel).AvgFreqRespOneSided(i,FreqIndice);
+% 
+%                 Phase=O.(FiltLabel).(Val1Label).(Val2Label).AvgPhaseOneSided(iConf,FreqIndice);
+%                 Mag=O.(FiltLabel).(Val1Label).(Val2Label).AvgMagOneSided(iConf,FreqIndice);
+%                 FreqResp=O.(FiltLabel).(Val1Label).(Val2Label).AvgFreqRespOneSided(iConf,FreqIndice);
+% 
+%                 Estnp=3;
+%                 Estnz=2;
+% 
+%                 minfThres=1000;
+%                 StabThres=1;
+%                 IterLim=20;
+% 
+%                 lb= [0.1 0.1 0.1 -1 -3 1 ];
+%                 ub= [0.2  .2  .2  0 -2 2 ];
+%                 x0=0.01*ones(1,(Estnp+Estnz+1));
+%     %             x0=Detx0(Estnp+Estnz+1,lb,ub);
+%                 [FittedFreqResp SysTf]= sysiden_basic(Mag,x0,lb,ub,FreqVec,Estnp,Estnz,Ts);
+%                 SysFreq = frd(FreqResp,FreqVec,'FrequencyUnit','Hz','Ts',Ts);
+%     %             SysTf=tfest(SysFreq,1,0,'Ts',Ts);
+% 
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).np = Estnp;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).Mag = Mag;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).Phase = Phase;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).FreqResp = FreqResp;
+% 
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).nz = Estnz;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).lb = lb;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).ub = ub;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).SysFreq=SysFreq;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).FreqVec=FreqVec;
+% 
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).SysTf=SysTf;
+%                 O.(FiltLabel).(Val1Label).(Val2Label).(ConfLabel).FittedFreqResp=FittedFreqResp';
+%             end
         end
     end
 end
@@ -469,31 +466,31 @@ for iFilt=1:1
     FiltLabel=sprintf('Filt_%d',iFilt);
     FiltLabel2=FiltLabels(iFilt);
 
-    for iVal1=9
+    for iVal1=1:10
         
         Val1Label=sprintf('Val_%d',iVal1);
         rndfixed=randi([90 110],1)/100;
 
-        for iVal2=Val2Num
+        for iVal2=1
             
-%         
             Val2Label=sprintf('Val_%d',iVal2);
             
-            MagL=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagAllRepsOneSided;
-            FittedFreqResp=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FittedFreqResp;
+%             MagL=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagAllRepsOneSided;
+%             FittedFreqResp=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FittedFreqResp;
             WelchFittedFreqResp=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WelchFittedFreqResp;
-            MagWelch=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagWelchAllRepsOneSided(FreqIndice);
+            MagWelch=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MagFreqRespWelchOneSided(FreqIndice);
+            f_onesided=O.(FiltLabel).(Val1Label).(Val2Label).f_onesided(FreqIndice);
 
-            FreqVec=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqVec;
+%             FreqVec=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).FreqVec;
 
-            PhaseL=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseAllRepsOneSided;
+%             PhaseL=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).PhaseAllRepsOneSided;
 
             plotrange=1:NumUniquePts;
             figure(iFilt)
             subplot(2,1,1)
-            semilogx(f_onesided,20*log10((MagL(2:end))))
+            semilogx(f_onesided,20*log10(MagWelch))
             hold on
-            semilogx(FreqVec,20*log10(FittedFreqResp))
+            semilogx(FreqVec,20*log10(WelchFittedFreqResp))
 %             hold 
 %             semilogx(f_onesided,zeros(1,length(f_onesided)),'k')
             xlabel(' Freq. (Hz) ')
@@ -1120,7 +1117,7 @@ Stf=ConstructTF(x,Estnz);
 S=freqresp(Stf,FreqVec,'Hz');
 S=squeeze(S);
 
-obj1=sum((abs(FreqResp)-abs(S)).^2);
+obj1=sum((abs(FreqResp)-abs(S')).^2);
 % obj2=sum(((angle(FreqResp)-angle(S'))).^2);
 obj=obj1;
 end
