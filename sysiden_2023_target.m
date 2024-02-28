@@ -817,8 +817,7 @@ end
 
 %% PLotting target_vs_paresis
 FilterNum=1;
-RepeatLabel=sprintf('Rep_%d',10);
-Val1Range=[1 10];
+Val1Range=[1 100];
 Val2Range=[1 10];
 clear SysDen
 RepeatLabel=sprintf('Rep_%d',1);
@@ -859,7 +858,7 @@ for iFilt=1:FilterNum
     end
     figure(1000) 
     subplot(3,1,1)
-    semilogx(1:length(ConfMar(:,1)),ConfMar(1,:))
+    semilogx(1:length(ConfMar(1,:)),ConfMar(1,:))
     hold
     subplot(3,1,2)
 %     semilogx(1:length(ConfMar(:,1)),WMar(1,:))
@@ -879,25 +878,28 @@ for iFilt=1:FilterNum
 %     semilogx(1:iVal1Num,RepMar)
 %     
 
-qy=flip(O.('Paresis').ParamValues);
-qx=flip(O.('Target').ParamValues);
+qy=O.('Paresis').ParamValues;
+qx=O.('Target').ParamValues;
 
 
     figure
-    mesh(qx,qy,ConfMar)
+    mesh(qx,qy,ConfMar')
     xlabel('Target')
     ylabel('Paresis Level')
     zlabel('Stability Margin')
     
         figure
-    mesh(qx,qy,WMar)
+    mesh(qx,qy,WMar')
     xlabel('Target')
     ylabel('Paresis Level')
     zlabel('Stability Margin')
 
 end
-              
-%% 2d black figure
+% fitting for clearing the error due convergnce issues 
+
+
+
+% 2d black figure
 
 
 
