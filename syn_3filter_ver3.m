@@ -1396,6 +1396,7 @@ for iRep=1:1
     end
 end
 
+save('syn_3filter3_occrate')
 
 %%
 

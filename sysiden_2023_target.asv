@@ -940,10 +940,9 @@ end
 % end
 
 figure(42)
-[r,c]=size(FittedMat);
-for indi=1:c
-    for indj=1:r
-        loglog(qx(indj)',qy(indi),'o','Color',sqrt(FittedMat(indj,indi))*[1, 0 ,0],'LineWidth',5)
+for indi=1:length(FittedMat)
+    for indj=1:height(FittedMat)
+        plot(qx(indj),qy(indi),'*','Color',FittedMat(indj,indi)*[0.1,0.1,0.1])
         hold on;
     end
 end
@@ -953,10 +952,10 @@ end
 % xlabel('Target')
 % ylabel('Paresis Level')
 % zlabel('Stability Margin')
-% clear data4d
-% data4d(:,:,1) = FittedMat';
-% data4d(:,:,2) = FittedMat'/2;
-% 
+clear data4d
+data4d(:,:,1) = FittedMat';
+data4d(:,:,2) = FittedMat'/2;
+
 figure
 plot3(qx,qy,FittedMat)
 %slice(data4d,[],[],[1])
