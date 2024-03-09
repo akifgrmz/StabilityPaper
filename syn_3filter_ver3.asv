@@ -1169,9 +1169,7 @@ for iRep=1:RepNum
 %                 S.(RepLabel).(FiltLabel).EstEffort(iwc,:)=ans.Outcome((TimeRange2(1)/tstep:TimeRange2(2)/tstep),2);
 %                 S.(RepLabel).(FiltLabel).TrueEffort(iwc,:)=ans.Outcome((TimeRange2(1)/tstep:TimeRange2(2)/tstep),3);
             end
-
         end
-
     end
 end
 
@@ -1332,15 +1330,20 @@ for iRep=1:1
     end
 end
 
+%%
+% str1=sprintf('%0.3f',0.01);
+% set_param('NSFsim_syn/Paretic Hand/mWave/GainVar','Gain',str1)
+save('syn_3filter3_target')
 
 
 %% Occlusion Rate
-low=0.5;
-high=1.2;
+low=-0.5;
+high=0.5;
 NumPoints=100;
 % wc=linspace(low,high,NumPoints);
 wc=logspace(log10(low),log10(high),NumPoints);
 FilterOrder=[2 1 3 4];
+
 % rng('shuffle');
 % a=1000;
 % b=100;
@@ -1367,7 +1370,7 @@ for iRep=1:1
 
         %     assignin(mdlWks,'rngseed',rngseed(iwc));
             str1=sprintf('%0.3f',wc(iwc));
-            set_param('NSFsim_syn_2023/DC','Value',str1)
+            set_param('NSFsim_syn_2023/Paretic Hand/Occlusion/Constant','Value',str1);
             sim('NSFsim_syn_2023',SimTime);
 
             tstep=ans.SimulationMetadata.ModelInfo.SolverInfo.FixedStepSize*100;
@@ -1391,11 +1394,112 @@ for iRep=1:1
     end
 end
 
+%%
+%%
+Target=0.5;
+clear O
+O=struct;
+O.TrackingError.data=TrackingError;
+O.StdTe=StdTe;
+O.EstEffort=EstEffort;
+O.TrueEffort=TrueEffort;
+O.NonPareticAngle=NonPareticAngle;
+O.StdEE=StdEE;
+O.EffortCorr.data=EffortCorr;
+O.TrackingSNR.data=(StdTe/Target).^-1;
+O.EstEffSNR.data=(EstEffort./StdEE);
+meandelay=40;
+O.wc=wc/meandelay/10;
 
- %%
-% str1=sprintf('%0.3f',0.01);
-% set_param('NSFsim_syn/Paretic Hand/mWave/GainVar','Gain',str1)
-save('syn_3filter3_target')
+BaseLine=1;
+Target=0.5;
+fit_n=4;
+
+ParamLabels={'TrackingError','TrackingSNR','EstEffSNR','EffortCorr'};
+ParamTitles={'TrackingError','TrackingSNR',...
+    'Estimated Effort SNR','Correlation: True vs Estimated Effort'};
+ylabels={'Tracking Error (a.u.)','Tracking SNR',...
+    'Estimtad Effort SNR','Pearson Correlation'};
+FilterLabels={'Comb','GS','Blanking'};
+LineLabels={'-','--','-.'};
+
+for iParam=1:3
+
+    ParamLabel=ParamLabels{iParam};
+    
+%     if iParam==4
+%         fit_n=0;
+%     end
+    
+    for FilterNum=1:1
+        y(FilterNum,:)=O.(ParamLabel).data(FilterNum,:);
+        x=O.wc;
+        PercentChange(FilterNum,:)=-100+100*abs(y(FilterNum,:))/abs(y(1,BaseLine));
+        FittedVal(FilterNum,:)=nPolyFit(x,y(FilterNum,:),fit_n);
+        FittedPercent(FilterNum,:)=nPolyFit(x,PercentChange(FilterNum,:),fit_n);
+    end
+    
+    figure(1)
+    subplot(3,2,iParam*2-1)
+%     yyaxis left
+    
+    for FilterNum=1:1
+%         p=semilogx(x,y(FilterNum,:),'-','LineWidth',1,'Color','k');
+%         p.Color(4) = 0.5;
+       pright(iParam,FilterNum)=semilogx(x,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2,'Color','k');
+        hold on
+    end
+    
+%     New_XTickLabel = get(gca,'xtick');
+%     set(gca,'XTickLabel',New_XTickLabel);
+%     a = get(gca,'Children');
+%     y1data = get(a, 'YData');
+%     y1min=min( [min(y1data{1}) min(y1data{2}) min(y1data{3}) ]);
+%     y1max=max( [max(y1data{1}) max(y1data{2}) max(y1data{3}) ]);
+%     scaledif=abs(y1max-y1min);
+%     ylim([y1min-scaledif*0.2 y1max+scaledif*0.2]);
+%     ylabel(ylabels{iParam});
+%     ax = gca;
+%     ax.YColor = 'k';
+    
+%     figure(1)
+%     yyaxis right
+
+%     for FilterNum=1:3
+%     %     semilogx(x,PercentChange(FilterNum,:),'-','LineWidth',2,'Color','k')
+%         pleft(iParam,FilterNum)=semilogx(x,FittedPercent(FilterNum,:),LineLabels{FilterNum},'LineWidth',2,'Color','k');
+%     end
+%     
+%     b = get(gca,'Children');
+%     y2data = get(b, 'YData');
+% 
+%     y2min=min( [min(y2data{1}) min(y2data{2}) min(y2data{3}) ]);
+%     y2max=max( [max(y2data{1}) max(y2data{2}) max(y2data{3}) ]);
+%     scaledif=abs(y2max-y2min);
+%     ylim([y2min-scaledif*0.2 y2max+scaledif*0.2]);
+%     title(ParamTitles{iParam});
+%     ax = gca;
+%     ax.YColor = 'k';
+%     
+
+    for FilterNum=1:1
+        plot(x(BaseLine),FittedVal(FilterNum,BaseLine),'*','Color','k')
+    end
+    
+    if iParam==1
+        legend(FilterLabels,'AutoUpdate','off','Location','NorthWest');
+    end
+    
+end
+
+subplot(3,2,5)
+% yyaxis right
+% lbl=ylabel('Change from Nominal Value (% change)');
+% lbl.Position(2) = 100; 
+% xlabel('Std. Dev. of m-Wave Delay (s)')
+
+%delete(pleft(4,3))
+%delete(pleft(4,1))
 
 
 %%

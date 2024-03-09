@@ -1169,9 +1169,7 @@ for iRep=1:RepNum
 %                 S.(RepLabel).(FiltLabel).EstEffort(iwc,:)=ans.Outcome((TimeRange2(1)/tstep:TimeRange2(2)/tstep),2);
 %                 S.(RepLabel).(FiltLabel).TrueEffort(iwc,:)=ans.Outcome((TimeRange2(1)/tstep:TimeRange2(2)/tstep),3);
             end
-
         end
-
     end
 end
 
@@ -1362,7 +1360,7 @@ for iRep=1:1
     RepLabel=sprintf('Rep_%d',iRep);
 %     assignin(mdlWks,'rngseed',rngseed(iRep));
     
-    for FilterNum=1:1
+    for FilterNum=1:3
 
         str1=sprintf('%d',FilterOrder(FilterNum));
         FiltLabel=sprintf('Filt_%d',FilterNum);
@@ -1396,6 +1394,7 @@ for iRep=1:1
     end
 end
 
+save('syn_3filter3_occrate3')
 
 %%
 
