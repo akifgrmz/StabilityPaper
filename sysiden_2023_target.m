@@ -928,7 +928,7 @@ for iVal1=Val1Range(1):Val1Range(2)
     [p(iVal1,:),S] = polyfit(qy,ConfMar(iVal1,:),2);
     FitVals=polyval(p(iVal1,:),qy);
 %     O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).ConfMarFitVal=FitVals;
-    FittedMat(iVal1,:)=FitVals;
+    FMat(iVal1,:)=FitVals;
 end
 
 % for iVal2=Val2Range(1):Val2Range(2)
@@ -940,10 +940,10 @@ end
 % end
 
 figure(42)
-[r,c]=size(FittedMat);
+[r,c]=size(FMat);
 for indi=1:c
     for indj=1:r
-        loglog(qx(indj)',qy(indi),'o','Color',sqrt(FittedMat(indj,indi))*[1, 0 ,0],'LineWidth',5)
+        loglog(qx(indj)',qy(indi),'o','Color',sqrt(FMat(indj,indi))*[1, 0 ,0],'LineWidth',5)
         hold on;
     end
 end
@@ -958,9 +958,9 @@ end
 % data4d(:,:,2) = FittedMat'/2;
 % 
 figure
-plot3(qx,qy,FittedMat)
+mesh(qx,qy,FMat')
 %slice(data4d,[],[],[1])
-colormap(hot)
+% mesh(hot)
 xlabel('Target')
 ylabel('Paresis Level')
 zlabel('Stability Margin')
