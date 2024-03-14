@@ -777,6 +777,9 @@ end
 % S.(ParLabel)=O.(ParLabel);
 %%
 save('SysIden_nyq_ver4')
+%%
+
+load('SysIden_nyq_ver4')
 
 %% plotting
 iVal1=1;
@@ -816,6 +819,8 @@ for iConf=1:1
 end
 
 %% PLotting target_vs_paresis
+
+
 FilterNum=1;
 Val1Range=[1 100];
 Val2Range=[1 10];
@@ -894,7 +899,8 @@ for iFilt=1:FilterNum
     zlabel('Stability Margin')
 
 end
-%% fitting for clearing the error due convergnce issues 
+%% fix the error due convergnce issues 
+load('SysIden_nyq_ver4')
 
 x = 1:100; 
 y = -0.3*x + 2*randn(1,100); 
@@ -906,6 +912,7 @@ RepeatLabel=sprintf('Rep_%d',1);
 qy=O.('Paresis').ParamValues;
 qx=O.('Target').ParamValues;
 clear p FittedMat
+
 for iFilt=1:FilterNum
     FiltLabel=sprintf('Filt_%d',iFilt);
 
@@ -917,11 +924,10 @@ for iFilt=1:FilterNum
             
             ConfMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MinConfIntMar;
             WMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WMar;
-              
-
         end
     end
 end
+
 
 for iVal1=Val1Range(1):Val1Range(2)
 
@@ -939,14 +945,14 @@ end
 %     FittedMat(iVal2,:)=FitVals;
 % end
 
-figure(42)
-[r,c]=size(FMat);
-for indi=1:c
-    for indj=1:r
-        loglog(qx(indj)',qy(indi),'o','Color',sqrt(FMat(indj,indi))*[1, 0 ,0],'LineWidth',5)
-        hold on;
-    end
-end
+% figure(42)
+% [r,c]=size(FMat);
+% for indi=1:c
+%     for indj=1:r
+%         loglog(qx(indj)',qy(indi),'o','Color',(sqrt(FMat(indj,indi))-0.5)*[0.1, 0 ,0.5],'LineWidth',5)
+%         hold on;
+%     end
+% end
 
 %pcolor(FittedMat')
 %colormap()
@@ -956,21 +962,17 @@ end
 % clear data4d
 % data4d(:,:,1) = FittedMat';
 % data4d(:,:,2) = FittedMat'/2;
-% 
+
 figure
-mesh(qx,qy,FMat')
+imagesc(qx,qy,FMat')
+colormap(gray);
 %slice(data4d,[],[],[1])
 % mesh(hot)
 xlabel('Target')
 ylabel('Paresis Level')
 zlabel('Stability Margin')
+colorbar; 
 
-
-
-
-
-
-% 2d black-grey figure
 
 
 
