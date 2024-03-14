@@ -2,7 +2,7 @@
 
 clear all
 FileLabels={'syn_3filter2_PhandNoReps2','syn_3filter2_SHandNoReps2',...
-    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter2_StimFreqNoReps2'};
+    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter3_occrate4'};
 SynLabels=["PHand", "SHand","Occ","DmWave","StimFreq"];
 SampTypeLabels=["PChangeMat", "VarMat", "AvgMinMaxMat"];
 load("SynSimResults.mat")
@@ -144,7 +144,7 @@ SynS.SynLabels=SynLabels;
 
 
 %%
-save('SynSimResults2','SynS')
+save('SynSimResults3','SynS')
 
 %% plot rsquared
 clear all
