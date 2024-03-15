@@ -5,7 +5,7 @@ BaseLineVal=[ 50 50 50 50 50];
 ParamNum=4;
 LegendLocation={'NorthWest','NorthWest','NorthEast','NorthEast','NorthEast'};
 FileLabels={'work_paretic_noseed2', 'work_stim_noseed2',...
-    'work_occ_noseed2','work_mwave_noseed3','syn_3filter3_occrate4'};
+    'work_occ_noseed2','work_mwave_noseed3','syn_3filter3_occrate5'};
 FileLabels2={'work_paretic2', 'work_stim4', 'work_occ3','work_mwave3', 'work_stimfreq'};
 ParamLabels={'TrackingError','TrackingSNR','EstEffSNR','EffortCorr'};
 xAxisLabels={'Volitional Paretic Hand Opening Constant',...
@@ -124,7 +124,7 @@ for iSyn=1:SynNum
             hold on
        end
 
-%         xlim ([x(10)  x(90)]  )
+        xlim ([x(10)  x(90)]  )
 %         ylim([ yLimVec(iParam,:)  ] )
         a = get(gca,'Children');
         y1data = get(a, 'YData');

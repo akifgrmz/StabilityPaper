@@ -2,7 +2,7 @@
 
 clear all
 FileLabels={'syn_3filter2_PhandNoReps2','syn_3filter2_SHandNoReps2',...
-    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter3_occrate4'};
+    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter3_occrate5'};
 SynLabels=["PHand", "SHand","Occ","DmWave","StimFreq"];
 SampTypeLabels=["PChangeMat", "VarMat", "AvgMinMaxMat"];
 load("SynSimResults.mat")

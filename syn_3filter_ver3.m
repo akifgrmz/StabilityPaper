@@ -1337,12 +1337,12 @@ save('syn_3filter3_target')
 
 
 %% Occlusion Rate
-low=0.5;
-high=1.5;
+low=0.4;
+high=1.2;
 NumPoints=100;
 % wc=linspace(low,high,NumPoints);
 wc=logspace(log10(low),log10(high),NumPoints)-1;
-FilterOrder=[2 1 3 4];
+FilterOrder=[1 2  3 4 5];
 
 % rng('shuffle');
 % a=1000;
