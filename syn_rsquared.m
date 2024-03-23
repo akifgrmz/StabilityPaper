@@ -1,11 +1,8 @@
 %% load, calculate, combine
 
 clear all
-FileLabels={'syn_3filter2_PhandNoReps2','syn_3filter2_SHandNoReps2',...
-    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter3_occrate5'};
-SynLabels=["PHand", "SHand","Occ","DmWave","StimFreq"];
-SampTypeLabels=["PChangeMat", "VarMat", "AvgMinMaxMat"];
-load("SynSimResults.mat")
+
+load("SynSimResults3.mat")
 Ts=0.01;
 StFreq=20;
 DSample=1/Ts/StFreq;
@@ -20,6 +17,12 @@ DSampDataInd=DSampDataRange(1):DSampDataRange(2);
 TrackTar=0.5;
 TrackVec=ones(ValNum,length(DataInd))*TrackTar;
 DSamptrackVec=ones(ValNum,length(DSampDataInd))*TrackTar;
+
+FileLabels={'syn_3filter2_PhandNoReps2','syn_3filter2_SHandNoReps2',...
+    'syn_3filter2_OccNoReps2','syn_3filter2_mWaveDelNoReps2','syn_3filter3_occrate7'};
+SampTypeLabels=["PChangeMat", "VarMat", "AvgMinMaxMat"];
+
+SynLabels=["PHand", "SHand","Occ","DmWave","OccRate"];
 
 
 for iSyn=1:SynS.SynNum
@@ -49,6 +52,8 @@ for iSyn=1:SynS.SynNum
             T.(SynLabel).RSquared.(FiltLabel).TrackingVec=TrackingVec;
             T.(SynLabel).RSquared.(FiltLabel).TargetVec=TargetVec;
 
+            SynS.(SynLabel).TrackingError.wc=wc;
+
 
             for iVal=1:NumPoints
                 ValLabel=sprintf('Val_%d',iVal);
@@ -59,11 +64,11 @@ for iSyn=1:SynS.SynNum
                 AnovaTable=anova(mdl,'summary');
 %                 F=table2array(AnovaTable(2,4));
                 p_val=table2array(AnovaTable(2,5));
-
+                
                 T.(SynLabel).RSquared.Effdata.r_sqr(iFilt,iVal)=r_sqr;
                 T.(SynLabel).RSquared.data(iFilt,iVal)=r_sqr;
                 T.(SynLabel).RSquared.wc=SynS.(SynLabel).TrackingError.wc;
-
+                
                 T.(SynLabel).RSquared.Effdata.p_val(iFilt,iVal)=p_val;
 %                 T.(SynLabel).RSquared.data.AnovaTable(iFilt,iVal)=AnovaTable;
                 
@@ -75,7 +80,7 @@ for iSyn=1:SynS.SynNum
                 r_sqr=mdl.Rsquared.Ordinary;
                 AnovaTable=anova(mdl,'summary');
 %                 p_val=table2array(AnovaTable(2,5));
-
+                
                 T.(SynLabel).RSquared.Trackdata.r_sqr(iFilt,iVal)=r_sqr;
                 T.(SynLabel).RSquared.Trackdata.p_val(iFilt,iVal)=p_val;
                 
@@ -110,7 +115,7 @@ for iSyn=1:SynS.SynNum
                 AnovaTable=anova(mdl,'summary');
                 F=table2array(AnovaTable(2,4));
                 p_val=table2array(AnovaTable(2,5));
-
+                
                 T.(SynLabel).RSquared.DSamp.Trackdata.r_sqr(iFilt,iVal)=r_sqr;
                 T.(SynLabel).RSquared.DSamp.Trackdata.p_val(iFilt,iVal)=p_val;
 %                 T.(SynLabel).RSquared.data.AnovaTable(iFilt,iVal)=AnovaTable;
@@ -124,7 +129,7 @@ for iSyn=1:SynS.SynNum
                 T.(SynLabel).RSquared.(FiltLabel).DSamp.DSampTrueEffort=DSampTrueEffort;
                 T.(SynLabel).RSquared.(FiltLabel).DSamp.DSampTrackingVec=DSampTrackingVec;
                 T.(SynLabel).RSquared.(FiltLabel).DSamp.DSampTargetVec=DSampTargetVec;
-
+                
             end
         end
     end
@@ -141,10 +146,9 @@ SynS.DataRange=DataRange;
 SynS.DataInd=DataInd;
 SynS.TrackTar=TrackTar;
 SynS.SynLabels=SynLabels;
+ 
 
-
-%%
-save('SynSimResults3','SynS')
+save('SynSimResults3_rsqr','SynS')
 
 %% plot rsquared
 clear all

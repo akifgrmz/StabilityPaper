@@ -1,6 +1,6 @@
 clear all
-load('SynStatsVec2')
-
+load('SynStatsVec_2024')
+clear x
 Param=SynS.GenGroupVec(:,1);
 PerfMetric=SynS.GenGroupVec(:,2);
 Filter=SynS.GenGroupVec(:,3);
@@ -60,7 +60,7 @@ iSet=1; %range of change
 [gFilter, IDFilter]=findgroups(Filter);
 [gPerf, IDPerf]=findgroups(PerfMetric);
 
-Param=Param(gParam ~= 5 );
+% Param=Param(gParam ~= 5 );
 
 [p,tbl,stats] = anovan(x(gParam ~= 5 ,iSet),{Filter(gParam ~= 5 ) Param(gParam ~= 5 ) PerfMetric(gParam ~= 5 )},...
     'model','full','varnames',{'Filter','Param','PerfMetric'});
@@ -91,9 +91,9 @@ Group=PVals(:,3);
 P_Vals=PVals(:,4);
 PValTable=table(Bar1,Bar2,Group,P_Vals);
     
-%%
-OrderVec=[3 4 2 1  ]; % for parameter
-OrderVec2=[ 3 4 1 2];% for performance metrics
+%
+OrderVec=[3 4 2 1 5]; % for parameter
+OrderVec2=[ 3 4 1 2 5];% for performance metrics
 % Group=[ 3 3; 3 3; 4 4; 4 4; 4 4; 1 1; 1 1; 2 2; 2 2; 5 5; 5 5]; % columns
 % Bar=  [ 2 3; 1 3; 1 2;2 3; 1 3; 2 3; 1 3; 2 3; 1 3; 1 3; 2 3]; %rows
 BaseLvls=[500 700 800 800];
@@ -104,7 +104,7 @@ for iPerf=1:length(IDPerf)
     clear labels
     i=1;
     
-    for iParam=1:length(IDParam) -1
+    for iParam=1:length(IDParam)
         for iFilter=1:length(IDFilter)  
             iOrd=OrderVec(iParam);
             

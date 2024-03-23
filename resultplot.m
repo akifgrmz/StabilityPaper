@@ -1,11 +1,10 @@
 % plotting the results for the syn and nyquist analysis 
 clear all
 Target=0.5;
-BaseLineVal=[ 50 50 50 50 50];
 ParamNum=4;
 LegendLocation={'NorthWest','NorthWest','NorthEast','NorthEast','NorthEast'};
 FileLabels={'work_paretic_noseed2', 'work_stim_noseed2',...
-    'work_occ_noseed2','work_mwave_noseed3','syn_3filter3_occrate5'};
+    'work_occ_noseed2','work_mwave_noseed3','syn_3filter3_occrate7'};
 FileLabels2={'work_paretic2', 'work_stim4', 'work_occ3','work_mwave3', 'work_stimfreq'};
 ParamLabels={'TrackingError','TrackingSNR','EstEffSNR','EffortCorr'};
 xAxisLabels={'Volitional Paretic Hand Opening Constant',...
@@ -23,7 +22,9 @@ xLimVec=[];
 PChange=struct;
 load('SynSimResults3')
 
-%
+%%
+BaseLineVal=[ 50 ];
+
 ylabels={'Tracking Error','(a.u.)';'','Tracking SNR';'Estimated','Effort SNR';'','R-Squared'}';
 RepLabel=sprintf('Rep_%d',1);
 for iSyn=1:SynNum
@@ -92,12 +93,12 @@ for iSyn=1:SynNum
             
             
             
-            PercentChange(FilterNum,:)=-100+100*abs(y(FilterNum,:))/abs(y(1,BaseLineVal(iSyn)));
+            PercentChange(FilterNum,:)=-100+100*abs(y(FilterNum,:))/abs(y(1,BaseLineVal));
             FittedVal(FilterNum,:)=nPolyFit(x,y(FilterNum,:),fit_n);
             FittedPercent(FilterNum,:)=nPolyFit(x,PercentChange(FilterNum,:),fit_n);
             
-            Pmin=FittedVal(FilterNum,10)/FittedVal(FilterNum,BaseLineVal(iSyn))*100-100;
-            Pmax=FittedVal(FilterNum,90)/FittedVal(FilterNum,BaseLineVal(iSyn))*100-100;
+            Pmin=FittedVal(FilterNum,10)/FittedVal(FilterNum,BaseLineVal)*100-100;
+            Pmax=FittedVal(FilterNum,90)/FittedVal(FilterNum,BaseLineVal)*100-100;
             PChange(iParam).(SynLabel).PercentChange(FilterNum,:)=[ Pmin Pmax];
             
         end
@@ -119,18 +120,38 @@ for iSyn=1:SynNum
             % p=semilogx(x,y(FilterNum,:),LineLabels{FilterNum},'LineWidth',1,'Color','k');
             % p.Color(4) = 0.5;
             % ylim([0 0.03 ])
-        
+            
+            
+%             if iSyn==5 && FilterNum==2 && iParam==1
+%         
+%                 pright(iParam,FilterNum)=semilogx(x,0.4*FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+%                 
+%             elseif iSyn==5 && FilterNum==3 && iParam==1
+%                 pright(iParam,FilterNum)=semilogx(x,0.6*FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+%                 
+%             elseif iSyn==5 && FilterNum==1 && iParam==1
+%                 pright(iParam,FilterNum)=semilogx(x,0.4*FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+%                 
+%             elseif iSyn==5 && FilterNum==2 && iParam==2
+%                 pright(iParam,FilterNum)=semilogx(x,5*FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+% 
+%             else
+%                 pright(iParam,FilterNum)=semilogx(x,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+%             end
+%             
             pright(iParam,FilterNum)=semilogx(x,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
+
             hold on
+            
        end
 
         xlim ([x(10)  x(90)]  )
-%         ylim([ yLimVec(iParam,:)  ] )
-        a = get(gca,'Children');
-        y1data = get(a, 'YData');
-        y1min=min( [min(y1data{1}) min(y1data{2}) min(y1data{3}) ]);
-        y1max=max( [max(y1data{1}) max(y1data{2}) max(y1data{3}) ]);
-        scaledif=abs(y1max-y1min);
+        ylim([ yLimVec(iParam,:)  ] )
+%         a = get(gca,'Children');
+%         y1data = get(a, 'YData');
+%         y1min=min( [min(y1data{1}) min(y1data{2}) min(y1data{3}) ]);
+%         y1max=max( [max(y1data{1}) max(y1data{2}) max(y1data{3}) ]);
+%         scaledif=abs(y1max-y1min);
 %         ylim([y1min-scaledif*0.2 y1max+scaledif*0.2]);
         ax = gca;
         ax.YColor = 'k';
@@ -144,9 +165,8 @@ for iSyn=1:SynNum
 
         set(gca,'XTick',[])
 
-        
         for FilterNum=1:3
-            plot(x(BaseLineVal(iSyn)),FittedVal(FilterNum,BaseLineVal(iSyn)),'*','Color','k')
+            plot(x(BaseLineVal),FittedVal(FilterNum,BaseLineVal),'*','Color','k')
         end
 
         
