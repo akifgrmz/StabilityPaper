@@ -446,7 +446,7 @@ ParamNum=SynS.ParamNum;
 SynNum=SynS.SynNum;
 
 
-%% interactions (filter,param,perf)
+%%interactions (filter,param,perf)
 TickLabels={'VPHO' 'SPHO' 'EMG Occlusion' 'M-Wave Phase Shift' 'Occ Rate' };
 SetLabels={'Range of Change (%)', 'Norm Value'};
 ParamLabels={'Tracking Error', 'Tracking SNR', 'Effort Est. SNR', 'R-Squared' };
@@ -464,7 +464,7 @@ iSet=1; %range of change
 figure
 
 [results,means,~,gnames]= multcompare(stats,'Dimension',[ 1 2 3 ],'Alpha',0.05,'CType','bonferroni');
-%%
+%
 %identify the significant differences
 clear PVals
 j=1;
@@ -490,7 +490,7 @@ Group=PVals(:,3);
 P_Vals=PVals(:,4);
 PValTable=table(Bar1,Bar2,Group,P_Vals);
     
-%%
+%
 OrderVec=[4 5 2 1 3]; % for parameter
 OrderVec2=[ 3 4 1 2];% for performance metrics
 % Group=[ 3 3; 3 3; 4 4; 4 4; 4 4; 1 1; 1 1; 2 2; 2 2; 5 5; 5 5]; % columns
@@ -535,7 +535,7 @@ for iPerf=1:length(IDPerf)
     
     figure(10)
     ax1=subplot(length(IDPerf),1,iPerf);
-    brr=bar(xaxis,mn,'LineWidth',2);
+    brr=bar(xaxis,mn,'LineWidth',1);
     hold on
     [nbars,ngroups] = size(mn);
     xErr = nan(nbars, ngroups);

@@ -154,10 +154,10 @@ for iSyn=1:SynNum
         end
 
         if iSyn==1
-            xlim ([xFig(90)  xFig(10)]  )
+                        xlim ([xFig(90)  xFig(10)]  )
             ylim([ yLimVec(iParam,:)  ] )
         elseif iSyn~=5
-            xlim ([xFig(10)  xFig(90)]  )
+            xlim ([xFig(90)  xFig(10)]  )
             ylim([ yLimVec(iParam,:)  ] )
         else
             xlim ([xFig(1)  xFig(end)]  )

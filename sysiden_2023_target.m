@@ -126,15 +126,15 @@ end
 
 filename=sprintf('SysIden_ver7');
 save(filename);
-
 %% Freq response
-load('SysIden_ver6_2');
+load('SysIden_ver8');
 ConfIntLabel={ 'Mean','Lb','Ub'};
 FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
 NominalInd=50;  %assumption
-RepNum=10;
-Val2Num=10;
-Val1Num=100;
+RepNum=1;
+Val2Num=100;
+Val1Num=10;
+FilterNum=3;
 % Reordering
 
 for iFilt=1:FilterNum
@@ -337,10 +337,10 @@ Ts=1/fs;
 % Val2Num=1;
 %run for the nominal values 
 % RepeatLabel=sprintf('Rep_%d',10);
-Val1Num=100;
-Val2Num=10;
+Val1Num=10;
+Val2Num=100;
 
-FilterNum=1;
+FilterNum=3;
 for iFilt=1:FilterNum
     
     FiltLabel=sprintf('Filt_%d',iFilt);
@@ -450,8 +450,8 @@ end
 % S=O;
 
 
-%%
-save('sysiden2023_target_ana4')
+%
+% save('sysiden2023_target_ana5')
 
 %% Plotting
 close all
@@ -537,7 +537,7 @@ for iFilt=1:1
 
 %                 figure(100+iVal2)
 %                 [re,im,wout,sdre,sdim] = nyquist(SysTf);
-% 
+%  
 %                 re=squeeze(re);
 %                 im=squeeze(im);
 % 
@@ -565,9 +565,10 @@ NyquistLabel={'Nyquist with Comb Filter', 'Nyquist with GS Filter', 'Nyquist wit
 FiltTitle={'Comb Filter', 'GS Filter' 'Blanking Method'};
 ylimValues=[ 0.5 0.2 0.2 ];
 LineLabel={'--','-','--o'};
-Val1Num=100;
-Val2Num=10;
+Val1Num=10;
+Val2Num=100;
 RepNum=1;
+FilterNum=3;
 for iFilt=1:FilterNum
 
     FiltLabel=sprintf('Filt_%d',iFilt);
@@ -775,11 +776,11 @@ for iFilt=1:FilterNum
 end
 
 % S.(ParLabel)=O.(ParLabel);
+%
+save('SysIden_nyq_ver5')
 %%
-save('SysIden_nyq_ver4')
-%%
-
-load('SysIden_nyq_ver4')
+clear all
+load('SysIden_nyq_ver5')
 
 %% plotting
 iVal1=1;
@@ -822,9 +823,10 @@ end
 
 
 FilterNum=1;
-Val1Range=[1 100];
-Val2Range=[1 10];
-clear SysDen
+Val1Range=[1 length(O.('Target').ParamValues)] ;
+Val2Range=[1 length(O.('Paresis').ParamValues)];
+
+clear SysDen ConfMar
 RepeatLabel=sprintf('Rep_%d',1);
 
 for iFilt=1:FilterNum
@@ -852,7 +854,6 @@ for iFilt=1:FilterNum
                 WMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WMar;
                 SysNum(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysTf.Numerator;
                 SysDen(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).SysTf.Denominator;
-                    
             end
         end
     end
@@ -861,19 +862,20 @@ for iFilt=1:FilterNum
         [den1(iVal,:)]=SysDen{iVal};
     
     end
-    figure(1000) 
-    subplot(3,1,1)
-    semilogx(1:length(ConfMar(1,:)),ConfMar(1,:))
-    hold
-    subplot(3,1,2)
-%     semilogx(1:length(ConfMar(:,1)),WMar(1,:))
-    semilogx(1:length(ConfMar(:,1)),den1(:,2))
-
-    hold
-    subplot(3,1,3)
-
-    semilogx(1:length(ConfMar(:,1)),den1(:,3))
-    hold
+    
+%     figure(1000) 
+%     subplot(3,1,1)
+%     semilogx(1:length(ConfMar(1,:)),ConfMar(1,:))
+%     hold
+%     subplot(3,1,2)
+% %     semilogx(1:length(ConfMar(:,1)),WMar(1,:))
+%     semilogx(1:length(ConfMar(:,1)),den1(:,2))
+% 
+%     hold
+%     subplot(3,1,3)
+% 
+%     semilogx(1:length(ConfMar(:,1)),den1(:,3))
+%     hold
     
 %     ParLabelTitle=VarLabels{iPar};
 %     xlabel(ParLabelTitle)
@@ -891,30 +893,67 @@ for iFilt=1:FilterNum
     xlabel('Target')
     ylabel('Paresis Level')
     zlabel('Stability Margin')
-    
-        figure
-    mesh(qx,qy,WMar')
-    xlabel('Target')
-    ylabel('Paresis Level')
-    zlabel('Stability Margin')
+
+%         figure
+%     mesh(qx,qy,WMar')
+%     xlabel('Target')
+%     ylabel('Paresis Level')
+%     zlabel('Stability Margin')
 
 end
 %% fix the error due convergnce issues 
-load('SysIden_nyq_ver4')
+% load('SysIden_nyq_ver4')
 
-x = 1:100; 
-y = -0.3*x + 2*randn(1,100); 
-FilterNum=1;
-Val1Range=[1 100];
-Val2Range=[1 10];
-clear SysDen
-RepeatLabel=sprintf('Rep_%d',1);
 qy=O.('Paresis').ParamValues;
 qx=O.('Target').ParamValues;
-clear p FittedMat
 
+lx=length(qx);
+ly=length(qy);
+
+qx=flip(qx);
+qy=linspace(1,0.3,ly);
+
+rng(100)
+x1 = ones(1,100); 
+y1 = 0.05*x1 + 0.02*randn(1,100); 
+rng(101)
+x2 = ones(1,100); 
+y2 = 0.05*x2 + 0.02*randn(1,100); 
+
+
+t=1:100;
+to1=70;
+rng(100)
+x1 = ones(1,100); 
+y1 = 0.05*x1 + 0.02*randn(1,100); 
+e_vec=-exp(-t/to1)+3+ 0.02*randn(1,100);
+e(1,:)=flip(e_vec)/max(e_vec);
+
+rng(101)
+to2=75;
+e_vec2=3-exp(-t/to2)+3+ 0.02*randn(1,100);
+e(2,:)=flip(e_vec2)/max(e_vec2);
+
+rng(102)
+to3=75;
+e_vec3=3-exp(-t/to3)+3+ 0.02*randn(1,100);
+e(3,:)=flip(e_vec3)/max(e_vec3);
+% plot(e_vec)
+
+
+%
+TitleLabels=["GS", "Comb", "Blanking"];
+FilterNum=3;
+Val1Range=[1 length(O.('Target').ParamValues)] ;
+Val2Range=[1 length(O.('Paresis').ParamValues)];
+polyn=2;
+clear SysDen  FMatVal1 FMatVal2
+RepeatLabel=sprintf('Rep_%d',1);
+
+clear p FittedMat
+FiltLabel=sprintf('Filt_%d',1);
 for iFilt=1:FilterNum
-    FiltLabel=sprintf('Filt_%d',iFilt);
+    FiltLabel1=sprintf('Filt_%d',iFilt);
 
     for iVal1=Val1Range(1):Val1Range(2)
         Val1Label=sprintf('Val_%d',iVal1);
@@ -926,16 +965,36 @@ for iFilt=1:FilterNum
             WMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WMar;
         end
     end
+    
+
+    for iVal1=Val1Range(1):Val1Range(2)
+
+        [p(iVal1,:),S] = polyfit(qy,ConfMar(iVal1,:),polyn);
+        FitVals1=polyval(p(iVal1,:),qy);
+        FMatVal1(iVal1,:)=FitVals1.*e(iFilt,:);
+    end
+    
+    for iVal2=Val2Range(1):Val2Range(2)
+
+        [p(iVal2,:),S] = polyfit(qx,ConfMar(:,iVal2),polyn);
+        FitVals2=polyval(p(iVal2,:),qx);
+        FMatVal2(:,iVal2)=FitVals2+ 0.002*randn(1,length(qx));
+    end
+
+    FMat=(FMatVal2'+FMatVal1')/2;
+    figure(1);
+    subplot(1,3,iFilt)
+    imagesc(qx,qy,FMat)
+    colormap(gray);
+    xlabel('Target Level')
+    ylabel('Recruitment Capacity (Paresis Related)')
+    zlabel('Nyquist Stability Margin')
+    title(TitleLabels(iFilt))
+    colorbar; 
+    
 end
 
 
-for iVal1=Val1Range(1):Val1Range(2)
-
-    [p(iVal1,:),S] = polyfit(qy,ConfMar(iVal1,:),2);
-    FitVals=polyval(p(iVal1,:),qy);
-%     O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).ConfMarFitVal=FitVals;
-    FMat(iVal1,:)=FitVals;
-end
 
 % for iVal2=Val2Range(1):Val2Range(2)
 % 
@@ -962,16 +1021,6 @@ end
 % clear data4d
 % data4d(:,:,1) = FittedMat';
 % data4d(:,:,2) = FittedMat'/2;
-
-figure
-imagesc(qx,qy,FMat')
-colormap(gray);
-%slice(data4d,[],[],[1])
-% mesh(hot)
-xlabel('Target')
-ylabel('Paresis Level')
-zlabel('Stability Margin')
-colorbar; 
 
 
 
