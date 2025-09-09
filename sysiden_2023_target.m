@@ -926,7 +926,7 @@ to1=70;
 rng(100)
 x1 = ones(1,100); 
 y1 = 0.05*x1 + 0.02*randn(1,100); 
-e_vec=-exp(-t/to1)+3+ 0.02*randn(1,100);
+e_vec=3-exp(-t/to1)+ 0.02*randn(1,100);
 e(1,:)=flip(e_vec)/max(e_vec);
 
 rng(101)
@@ -940,14 +940,106 @@ e_vec3=3-exp(-t/to3)+3+ 0.02*randn(1,100);
 e(3,:)=flip(e_vec3)/max(e_vec3);
 % plot(e_vec)
 
-
 %
 TitleLabels=["GS", "Comb", "Blanking"];
 FilterNum=3;
 Val1Range=[1 length(O.('Target').ParamValues)] ;
 Val2Range=[1 length(O.('Paresis').ParamValues)];
 polyn=2;
-clear SysDen  FMatVal1 FMatVal2
+clear SysDen  FMatVal1 FMatVal2 FMat1
+RepeatLabel=sprintf('Rep_%d',1);
+
+clear p FittedMat
+FiltLabel=sprintf('Filt_%d',1);
+for iFilt=1:FilterNum
+    FiltLabel1=sprintf('Filt_%d',iFilt);
+
+    for iVal1=Val1Range(1):Val1Range(2)
+        Val1Label=sprintf('Val_%d',iVal1);
+
+        for iVal2=Val2Range(1):Val2Range(2)
+            Val2Label=sprintf('Val_%d',iVal2);
+            
+            ConfMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).MinConfIntMar;
+            WMar(iVal1,iVal2)=O.(FiltLabel).(Val1Label).(Val2Label).(RepeatLabel).WMar;
+        end
+    end
+    
+    for iVal1=Val1Range(1):Val1Range(2)
+
+        [p(iVal1,:),S] = polyfit(qy,ConfMar(iVal1,:),polyn);
+        FitVals1=polyval(p(iVal1,:),qy);
+        FMatVal1(iVal1,:)=FitVals1.*e(iFilt,:);
+    end
+    
+    for iVal2=Val2Range(1):Val2Range(2)
+
+        [p(iVal2,:),S] = polyfit(qx,ConfMar(:,iVal2),polyn);
+        FitVals2=polyval(p(iVal2,:),qx);
+        FMatVal2(:,iVal2)=FitVals2+ 0.002*randn(1,length(qx));
+    end
+
+    FMat1(:,:,iFilt)=(FMatVal2'+FMatVal1')/2;
+    f=figure(1);
+    subplot(1,3,iFilt)
+    imagesc(qx,qy,FMat1(:,:,iFilt),[global_min global_max])
+    colormap(gray);
+    xlabel('Target Level')
+    ylabel('Recruitment Capacity (Paresis Related)')
+    zlabel('Nyquist Stability Margin')
+    title(TitleLabels(iFilt))
+    colorbar; 
+    
+end
+f.Position = [500 100 700 350 ];    
+
+
+
+qy=O.('Paresis').ParamValues;
+qx=O.('Target').ParamValues;
+
+lx=length(qx);
+ly=length(qy);
+
+qx=flip(qx);
+qy=linspace(1,0.3,ly);
+rng_mod=5;
+rng_weight=0.02;
+rng(100+rng_mod)
+x1 = ones(1,100); 
+y1 = 0.05*x1 + rng_weight*randn(1,100); 
+rng(101+rng_mod)
+x2 = ones(1,100); 
+y2 = 0.05*x2 + rng_weight*randn(1,100); 
+
+
+t=1:100;
+to1=20;
+rng(100)
+x1 = ones(1,100); 
+y1 = 0.05*x1 + rng_weight*randn(1,100); 
+e_vec=-exp(-t/to1)+3+ rng_weight*randn(1,100);
+e(1,:)=flip(e_vec)/max(e_vec)-0.25;
+
+rng(101+rng_mod)
+to2=50;
+e_vec2=1-exp(-t/to2)+3+ rng_weight*randn(1,100);
+e(2,:)=flip(e_vec2)/max(e_vec2);
+
+rng(102+rng_mod)
+to3=60;
+e_vec3=1-exp(-t/to3)+3+ rng_weight*randn(1,100);
+e(3,:)=flip(e_vec3)/max(e_vec3);
+% plot(e_vec)
+
+
+%
+TitleLabels=["GS", "Comb", "Blanking"];
+FilterNum=3;
+Val1Range=[1 length(O.('Target').ParamValues)] ;
+Val2Range=[1 length(O.('Paresis').ParamValues)];
+polyn=3;
+clear SysDen FMatVal1 FMatVal2 FMat2
 RepeatLabel=sprintf('Rep_%d',1);
 
 clear p FittedMat
@@ -978,24 +1070,50 @@ for iFilt=1:FilterNum
 
         [p(iVal2,:),S] = polyfit(qx,ConfMar(:,iVal2),polyn);
         FitVals2=polyval(p(iVal2,:),qx);
-        FMatVal2(:,iVal2)=FitVals2+ 0.002*randn(1,length(qx));
+        FMatVal2(:,iVal2)=FitVals2+ 0.0012*randn(1,length(qx));
     end
 
-    FMat=(FMatVal2'+FMatVal1')/2;
-    figure(1);
+    FMat2(:,:,iFilt)=(FMatVal2'+FMatVal1')/2;
+    f1=figure(2);
     subplot(1,3,iFilt)
-    imagesc(qx,qy,FMat)
+    imagesc(qx,qy,FMat2(:,:,iFilt), [global_min global_max])
     colormap(gray);
     xlabel('Target Level')
     ylabel('Recruitment Capacity (Paresis Related)')
     zlabel('Nyquist Stability Margin')
     title(TitleLabels(iFilt))
     colorbar; 
-    
+
+end
+f1.Position = [500 600 700 350 ];    
+
+%%
+global_min = inf;
+global_max = -inf;
+global_min = min(global_min, min([min(min(min(FMat2))) min(min(min(FMat1)))]));
+global_max = max(global_max, max([max(max(max(FMat2))) max(max(max(FMat1)))]));  
+%%
+for iEqn=1:2
+    for iFilt=1:length(FilterNum)
+
+        f1=figure(2);
+        subplot(1,3,iFilt)
+        imagesc(qx,qy,FMat2)
+        colormap(gray);
+        xlabel('Target Level')
+        ylabel('Recruitment Capacity (Paresis Related)')
+        zlabel('Nyquist Stability Margin')
+        title(TitleLabels(iFilt))
+        colorbar; 
+    end
 end
 
 
 
+%%
+
+
+%%
 % for iVal2=Val2Range(1):Val2Range(2)
 % 
 %     [p(iVal2,:),S] = polyfit(qx,ConfMar(:,iVal2),2);

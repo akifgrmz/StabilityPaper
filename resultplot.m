@@ -146,9 +146,12 @@ for iSyn=1:SynNum
 %             else
 %                 pright(iParam,FilterNum)=semilogx(x,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2);
 %             end
-%             
-            pright(iParam,FilterNum)=semilogx(xFig,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2,'Color',ColorLabels{FilterNum});
-
+            if iSyn~=5
+                % pright(iParam,FilterNum)=semilogx(xFig,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2,'Color',ColorLabels{FilterNum});
+            else
+                xFigAlt=0.3+1/length(xFig):(3-0.3)/length(xFig):3;
+                pright(iParam,FilterNum)=semilogx(xFigAlt,FittedVal(FilterNum,:),LineLabels{FilterNum},'LineWidth',2,'Color',ColorLabels{FilterNum});
+            end
             hold on
             
         end
@@ -159,6 +162,11 @@ for iSyn=1:SynNum
         elseif iSyn~=5
             xlim ([xFig(10)  xFig(90)]  )
             ylim([ yLimVec(iParam,:)  ] )
+        elseif iSyn==5
+
+            xlim ([xFigAlt(1)  xFigAlt(end)]  )
+            ylim([ yLimVec(iParam,:)  ] )
+
         else
             xlim ([xFig(1)  xFig(end)]  )
             ylim([ yLimVec(iParam,:)  ] )

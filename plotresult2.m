@@ -276,7 +276,6 @@ wc=logspace(log10(low),log10(high),NumPoints);
 str1=sprintf('%0.2f',wc(iwc));
 set_param('NSFsim_syn_plots/GainP','Gain',str1)
 
-
 low=0.3/2;
 high=0.3*2;
 wc=logspace(log10(low),log10(high),NumPoints);
